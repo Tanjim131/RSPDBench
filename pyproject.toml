@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rspdbench"
+version = "1.0.0"
+description = "Physically grounded remote-sensing product degradations for benchmarking Earth-observation models"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+authors = [
+  { name = "Tanjim Bin Faruk" },
+  { name = "Khondaker Masfiq Reza" },
+  { name = "Shrideep Pallickara" },
+  { name = "Sangmi Lee Pallickara" },
+]
+dependencies = ["numpy", "torch>=1.12"]
+
+[project.optional-dependencies]
+examples = ["pandas", "scipy", "matplotlib", "pillow", "h5py", "rasterio", "scikit-image", "scikit-learn", "geo-benchmark"]
+test = ["pytest"]
+
+[project.urls]
+Paper = "https://arxiv.org/abs/2609.23427"
+
+[tool.setuptools]
+packages = ["rspdbench"]

@@ -1,0 +1,1093 @@
+<title>RSPDBench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..650;1,8..60,400&display=swap">
+<style>
+/* Layout: one 1140px reading column under a dark "night pass" hero; findings as stacked figure bands. */
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --ink: #0f1522;
+  --ink-2: #485267;
+  --ink-3: #6f7a8e;
+  --rule: #dde2ea;
+  --accent: #b81d55;
+  --accent-soft: #fbe6ee;
+  --focus: #2a78d6;
+  --hero-bg: #070b13;
+  --hero-ink: #eef2f8;
+  --hero-ink-2: #a7b1c4;
+  --hero-rule: #1f2a3d;
+  --hero-accent: #ff6b9a;
+  --grid: #e7eaf0;
+  --axis: #c3c9d4;
+  --deemph: #b9c0cc;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --s4: #eda100;
+  --div-mid: #f0efec;
+  --div-pos: #b3172c;
+  --div-neg: #1c5cab;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --col: 1140px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1019; --surface: #111927; --ink: #e8edf5; --ink-2: #b0b9ca; --ink-3: #8a94a8; --rule: #233046;
+    --accent: #ff6b9a; --accent-soft: #3a1626; --focus: #6da7ec;
+    --grid: #1d2738; --axis: #34425a; --deemph: #4a5770;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --div-mid: #283246; --div-pos: #ff7d7d; --div-neg: #7fb0ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1019; --surface: #111927; --ink: #e8edf5; --ink-2: #b0b9ca; --ink-3: #8a94a8; --rule: #233046;
+  --accent: #ff6b9a; --accent-soft: #3a1626; --focus: #6da7ec;
+  --grid: #1d2738; --axis: #34425a; --deemph: #4a5770;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  --div-mid: #283246; --div-pos: #ff7d7d; --div-neg: #7fb0ff;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 1.04rem/1.62 var(--font-body);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--accent); text-underline-offset: 0.18em; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.wrap { max-width: var(--col); margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(1.55rem, 2.6vw, 2.05rem); font-weight: 700; letter-spacing: -0.01em; line-height: 1.15; }
+h3 { font-size: 1.06rem; font-weight: 650; line-height: 1.3; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font: 500 0.74rem/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.mono { font-family: var(--font-mono); font-size: 0.86em; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--hero-bg); color: var(--hero-ink); }
+.hero .wrap { padding-block: 28px 44px; display: grid; gap: 28px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; font: 500 0.82rem/1 var(--font-mono); color: var(--hero-ink-2); letter-spacing: 0.06em; text-transform: uppercase; }
+.topbar nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.topbar a { color: var(--hero-ink-2); text-decoration: none; }
+.topbar a:hover { color: var(--hero-ink); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+.hero-copy { display: grid; gap: 20px; align-content: start; padding-top: 8px; }
+.venue { font: 500 0.78rem/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--hero-accent); }
+.hero h1 { font-size: clamp(2.6rem, 5.4vw, 4.5rem); max-width: 100%; font-weight: 820; font-stretch: 125%; font-variation-settings: "wdth" 125; letter-spacing: -0.035em; line-height: 0.92; }
+.hero .lede { font-size: clamp(1.1rem, 1.6vw, 1.28rem); line-height: 1.5; color: var(--hero-ink); max-width: 34ch; }
+.hero .title-full { font: 500 0.95rem/1.45 var(--font-display); color: var(--hero-ink-2); max-width: 52ch; }
+.authors { font: 500 0.98rem/1.6 var(--font-display); color: var(--hero-ink); }
+.authors span { white-space: nowrap; }
+.authors .aff { display: block; font-weight: 400; color: var(--hero-ink-2); font-size: 0.9rem; }
+.buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; font: 600 0.92rem/1 var(--font-display); text-decoration: none; border: 1px solid var(--hero-rule); color: var(--hero-ink); background: transparent; cursor: pointer; }
+.btn:hover { border-color: var(--hero-ink-2); }
+.btn.primary { background: var(--hero-accent); border-color: var(--hero-accent); color: #170710; }
+.btn svg { width: 16px; height: 16px; }
+
+/* explorer */
+.explorer { display: grid; gap: 12px; }
+.viewer { position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 100%; border-radius: 6px; overflow: hidden; background: #000; touch-action: pan-y; user-select: none; }
+.viewer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.viewer .after { clip-path: inset(0 0 0 var(--split, 50%)); }
+.viewer .divider { position: absolute; top: 0; bottom: 0; left: var(--split, 50%); width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.35); pointer-events: none; }
+.viewer .knob { position: absolute; top: 50%; left: var(--split, 50%); width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.45); display: grid; place-items: center; pointer-events: none; }
+.viewer .knob svg { width: 20px; height: 20px; color: #111; }
+.viewer .tag { position: absolute; top: 10px; padding: 4px 8px; border-radius: 4px; background: rgba(7,11,19,.72); color: #eef2f8; font: 500 0.72rem/1.2 var(--font-mono); letter-spacing: 0.05em; pointer-events: none; }
+.viewer .tag.left { left: 10px; } .viewer .tag.right { right: 10px; }
+.viewer input[type=range] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+.loupe { position: absolute; width: 150px; height: 150px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 6px 22px rgba(0,0,0,.55); pointer-events: none; background-repeat: no-repeat; image-rendering: pixelated; }
+.controls { display: grid; gap: 10px; }
+.control-row { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
+.control-row .label { font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--hero-ink-2); min-width: 66px; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { padding: 7px 11px; border-radius: 6px; border: 1px solid var(--hero-rule); font: 500 0.84rem/1 var(--font-display); color: var(--hero-ink-2); cursor: pointer; }
+.seg input:checked + label { background: var(--hero-ink); border-color: var(--hero-ink); color: var(--hero-bg); }
+.seg input:focus-visible + label { outline: 2px solid var(--hero-accent); outline-offset: 2px; }
+.seg input:disabled + label { opacity: 0.35; cursor: not-allowed; }
+.seg label b { font-family: var(--font-mono); font-weight: 600; margin-right: 6px; font-size: 0.78rem; }
+.bands { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.band { padding: 7px 4px 6px; border-radius: 4px; border: 1px solid var(--hero-rule); text-align: center; font: 500 0.7rem/1.25 var(--font-mono); color: var(--hero-ink-2); }
+.band b { display: block; font-size: 0.74rem; color: var(--hero-ink); font-weight: 600; }
+.band.hit { border-color: var(--hero-accent); background: rgba(255,107,154,.14); }
+.band .role { display: block; margin-top: 3px; font-size: 0.64rem; letter-spacing: 0.02em; color: var(--hero-ink-2); min-height: 1.2em; }
+.band.hit .role { color: var(--hero-accent); }
+.caption { font: 400 0.92rem/1.5 var(--font-display); color: var(--hero-ink); min-height: 2.9em; }
+.caption .mono { color: var(--hero-ink-2); }
+.credit { font: 400 0.72rem/1.4 var(--font-mono); color: var(--hero-ink-2); }
+
+/* ---------- sections ---------- */
+section.band-sec { padding-block: 56px; border-bottom: 1px solid var(--rule); }
+.sec-head { display: grid; gap: 10px; margin-bottom: 26px; }
+.sec-head p { color: var(--ink-2); }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 18px; }
+
+.problem { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.problem .big { font: 600 clamp(1.3rem, 2.3vw, 1.7rem)/1.3 var(--font-display); letter-spacing: -0.01em; max-width: 24ch; text-wrap: balance; }
+.problem .body { display: grid; gap: 14px; color: var(--ink-2); }
+
+.defects { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 16px; }
+.defect { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; cursor: pointer; text-align: left; color: inherit; font: inherit; }
+.defect:hover { border-color: var(--ink-3); }
+.defect img { width: 96px; height: 96px; border-radius: 4px; object-fit: cover; }
+.defect .id { font: 600 0.74rem/1 var(--font-mono); color: var(--accent); letter-spacing: 0.04em; }
+.defect h3 { margin: 4px 0 6px; }
+.defect p { font-size: 0.93rem; line-height: 1.45; color: var(--ink-2); }
+.defect .anchor { margin-top: 8px; font: 500 0.74rem/1.45 var(--font-mono); color: var(--ink); }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
+.tile { padding: 18px 18px 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; display: grid; gap: 8px; align-content: start; }
+.tile .value { font: 750 clamp(2.2rem, 4vw, 2.9rem)/1 var(--font-display); letter-spacing: -0.02em; }
+.tile .value small { font-size: 0.5em; font-weight: 600; margin-left: 2px; }
+.tile p { font: 400 0.92rem/1.45 var(--font-display); color: var(--ink-2); }
+
+.figure { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.fig-controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.pills { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.pills input { position: absolute; opacity: 0; pointer-events: none; }
+.pills label { padding: 6px 11px; border-radius: 999px; border: 1px solid var(--rule); font: 500 0.84rem/1 var(--font-display); color: var(--ink-2); cursor: pointer; background: var(--surface); }
+.pills input:checked + label { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.pills input:focus-visible + label { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ctl-label { font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); }
+select { font: 500 0.88rem/1 var(--font-display); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 7px 28px 7px 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 500 0.82rem/1.2 var(--font-display); color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; }
+.legend i.dot { width: 9px; height: 9px; border-radius: 50%; }
+.readout { font: 500 0.92rem/1.45 var(--font-display); color: var(--ink); }
+.readout .mono { color: var(--ink-2); }
+.note { font: 400 0.84rem/1.45 var(--font-display); color: var(--ink-3); }
+svg text { font-family: var(--font-display); }
+.ax text, .tick text { fill: var(--ink-3); font-size: 11px; }
+.ax line, .ax path { stroke: var(--axis); }
+.grid-line { stroke: var(--grid); stroke-width: 1; }
+.lbl { fill: var(--ink-2); font-size: 12px; }
+.lbl-strong { fill: var(--ink); font-size: 12px; font-weight: 600; }
+.chart-scroll { overflow-x: auto; }
+.chart-scroll svg { display: block; width: 100%; height: auto; margin-inline: auto; }
+#rk-svg { max-width: 760px; min-width: 560px; }
+#rc-svg { max-width: 780px; min-width: 520px; }
+#ch-svg { max-width: 640px; min-width: 440px; }
+#realism-svg { max-width: 560px; min-width: 380px; }
+
+.heatmaps { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 16px 14px; }
+.hm h3 { font-size: 0.95rem; margin-bottom: 2px; }
+.hm .sub { font: 400 0.76rem/1.3 var(--font-mono); color: var(--ink-3); margin-bottom: 6px; }
+.hm svg { width: 100%; height: auto; overflow: visible; }
+.hm rect.cell { stroke: var(--surface); stroke-width: 2; }
+.hm rect.cell.na { fill: var(--grid); }
+.hm rect.cell:hover, .hm rect.cell:focus { stroke: var(--ink); stroke-width: 2; outline: none; }
+.hm rect.max { stroke: var(--ink); stroke-width: 2; }
+.scale { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font: 500 0.78rem/1 var(--font-mono); color: var(--ink-3); }
+.scale canvas { width: 260px; max-width: 60vw; height: 12px; border-radius: 2px; }
+
+details.table-view summary { cursor: pointer; font: 500 0.84rem/1.4 var(--font-display); color: var(--ink-2); }
+.tbl-wrap { overflow-x: auto; margin-top: 10px; }
+table { border-collapse: collapse; font: 400 0.84rem/1.35 var(--font-display); font-variant-numeric: tabular-nums; width: 100%; }
+th, td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-weight: 600; color: var(--ink-2); }
+td.muted { color: var(--ink-3); }
+
+.two { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.triptych { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.triptych figure { margin: 0; display: grid; gap: 6px; }
+.triptych img { width: 100%; height: auto; aspect-ratio: 1; border-radius: 4px; image-rendering: pixelated; }
+.triptych figcaption { font: 500 0.74rem/1.3 var(--font-mono); color: var(--ink-2); }
+
+.excess-list { display: grid; gap: 4px; }
+.excess-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 54px; gap: 10px; align-items: center; padding: 5px 6px; border-radius: 6px; font: 500 0.84rem/1.2 var(--font-display); color: var(--ink); background: none; border: 0; text-align: left; cursor: pointer; width: 100%; }
+.excess-row:hover, .excess-row[aria-pressed="true"] { background: var(--accent-soft); }
+.excess-row .who small { display: block; color: var(--ink-3); font-weight: 400; font-size: 0.76rem; }
+.excess-row .bar { height: 10px; background: var(--grid); border-radius: 0 4px 4px 0; position: relative; }
+.excess-row .bar span { position: absolute; inset: 0 auto 0 0; background: var(--s1); border-radius: 0 4px 4px 0; }
+.excess-row .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+
+.code { background: var(--hero-bg); color: #dfe6f2; border-radius: 10px; padding: 18px 20px; overflow-x: auto; font: 400 0.84rem/1.6 var(--font-mono); }
+.code .c { color: #8a94a8; } .code .k { color: #ff9fbe; } .code .s { color: #9fd8b5; }
+.cite { position: relative; }
+.cite pre { margin: 0; white-space: pre; }
+.copy { position: absolute; top: 12px; right: 12px; font: 600 0.78rem/1 var(--font-display); padding: 8px 12px; border-radius: 999px; border: 1px solid #2b3650; background: #111827; color: #eef2f8; cursor: pointer; }
+footer { padding-block: 34px 48px; color: var(--ink-3); font: 400 0.82rem/1.6 var(--font-display); }
+footer .wrap { display: grid; gap: 8px; }
+
+.tooltip { position: fixed; z-index: 30; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 10px 28px rgba(15,21,34,.18); padding: 8px 10px; font: 400 0.8rem/1.35 var(--font-display); max-width: 260px; }
+.tooltip .tv { font-weight: 700; font-size: 1rem; }
+.tooltip .tk { display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.tooltip .tk i { width: 12px; height: 2px; border-radius: 2px; display: inline-block; }
+
+@media (max-width: 900px) {
+  .hero-grid, .problem, .two { grid-template-columns: minmax(0, 1fr); }
+  .hero .lede { max-width: none; }
+}
+@media (max-width: 520px) {
+  .bands { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .defect { grid-template-columns: 72px minmax(0, 1fr); }
+  .defect img { width: 72px; height: 72px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .viewer .after, .viewer .divider, .viewer .knob { transition: none; }
+  .btn, .seg label, .pills label, .defect { transition: border-color .15s ease, background-color .15s ease, color .15s ease; }
+}
+</style>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="topbar">
+      <span>RSPDBench</span>
+      <nav aria-label="Page sections">
+        <a href="#defects">Defects</a>
+        <a href="#findings">Findings</a>
+        <a href="#code">Code</a>
+        <a href="#citation">Cite</a>
+      </nav>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="venue">WACV 2027 · Evaluations and Datasets</div>
+        <h1>RSPDBench</h1>
+        <p class="lede">A wildfire map is only as good as the satellite product it reads. RSPDBench degrades that product the way real sensors and processing chains do, and measures what each Earth-observation foundation model loses.</p>
+        <p class="title-full">Benchmarking Vision Foundation Models on Earth Observation Tasks Under Physically Grounded Remote-Sensing Product Degradations</p>
+        <p class="authors">
+          <span>Tanjim Bin Faruk</span>, <span>Khondaker Masfiq Reza</span>, <span>Shrideep Pallickara</span>, <span>Sangmi Lee Pallickara</span>
+          <span class="aff">Colorado State University</span>
+        </p>
+        <div class="buttons">
+          <a class="btn primary" href="https://arxiv.org/abs/2609.23427" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></svg>Paper</a>
+          <a class="btn" href="https://github.com/TODO/RSPDBench" data-repo target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.6 7.6 0 0 1 8 3.87c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
+          <a class="btn" href="#citation">BibTeX</a>
+        </div>
+      </div>
+
+      <div class="explorer" aria-label="Defect explorer">
+        <div class="viewer" id="viewer" style="--split: 50%">
+          <img id="img-before" alt="Clean HLS false-color product of a burn scar" src="assets/explorer/clean.jpg" width="512" height="512">
+          <img id="img-after" class="after" alt="" src="assets/explorer/p3_s3.jpg" width="512" height="512">
+          <div class="divider"></div>
+          <div class="knob"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 5 2 10l5 5M13 5l5 5-5 5"/></svg></div>
+          <span class="tag left">CLEAN</span>
+          <span class="tag right" id="tag-after">P3 · S3</span>
+          <div class="loupe" id="loupe" hidden></div>
+          <input type="range" id="split" min="0" max="100" value="50" aria-label="Move the comparison divider">
+        </div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="label">Defect</span>
+            <div class="seg" role="radiogroup" aria-label="Defect" id="ex-family"></div>
+          </div>
+          <div class="control-row">
+            <span class="label">Severity</span>
+            <div class="seg" role="radiogroup" aria-label="Severity" id="ex-sev"></div>
+            <span class="label" style="min-width:auto">Gain</span>
+            <div class="seg" role="radiogroup" aria-label="Gain direction" id="ex-dir"></div>
+            <div class="seg"><input type="checkbox" id="ex-loupe"><label for="ex-loupe">Loupe 3×</label></div>
+          </div>
+          <div class="bands" id="ex-bands" aria-label="Bands affected by the selected defect"></div>
+          <p class="caption" id="ex-caption" aria-live="polite"></p>
+          <p class="credit">HLS Burn Scars tile T11SNS, day 276 of 2020 · false color: SWIR2, NIR, red as R, G, B · 30 m pixels · degraded with the released rspdbench code</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="band-sec">
+    <div class="wrap problem">
+      <p class="big">Benchmarks score models on clean products. Deployment feeds them whatever the processing chain delivered.</p>
+      <div class="body">
+        <p>Before a model sees a satellite image, the light has passed through optics and detectors, and the bands have been calibrated, resampled onto one grid and, for products like HLS, harmonized across sensors. Each step can leave a residual defect.</p>
+        <p>Broad domain-shift benchmarks change geography, season and sensor at once, so they cannot say which defect caused a failure. RSPDBench keeps every scene fixed and changes one product defect at a time, at three severities, in the product's own units, before any model-specific preprocessing.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-sec" id="defects">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Paper Sec. 3 · Tab. 1</span>
+        <h2>Six defects, each tied to an instrument number</h2>
+        <p>Four primitives isolate one failure each; two chains combine them the way real acquisitions and harmonized products do. Click a card to load it in the explorer.</p>
+      </div>
+      <div class="defects" id="defect-cards"></div>
+
+      <div class="sec-head" style="margin-top:44px">
+        <span class="eyebrow">Paper Sec. 3.4</span>
+        <h3 style="font-size:1.35rem">Checked against the sensor itself</h3>
+        <p>Sentinel-2 measures near-infrared twice: band B08 at 10 m and band B8A at 20 m, over almost the same wavelengths. Passing the real 10 m band through P1's moderate setting reproduces the real 20 m band of the same scene. Across 3,000 test patches, the best-fitting blur width is σ = 0.75–1.5 pixels, bracketing the benchmark's σ = 1. The real misregistration between the two bands is only 0.02–0.05 px, so P3's 1–2 px levels are deliberate stress tests.</p>
+      </div>
+      <div class="two">
+        <div class="figure">
+          <div class="triptych">
+            <figure><img src="assets/realism/b08_10m.png" alt="Real Sentinel-2 B08 band at 10 m" width="360" height="360"><figcaption>B08 · real 10 m</figcaption></figure>
+            <figure><img src="assets/realism/b08_p1s2.png" alt="The same B08 band after P1 severity 2" width="360" height="360"><figcaption>B08 after P1-S2</figcaption></figure>
+            <figure><img src="assets/realism/b8a_20m.png" alt="Real Sentinel-2 B8A band at 20 m of the same patch" width="360" height="360"><figcaption>B8A · real 20 m</figcaption></figure>
+          </div>
+          <p class="note">m-BigEarthNet test patch, near-infrared, same stretch for all three.</p>
+        </div>
+        <div class="figure" id="fig-realism">
+          <h3>Agreement with the real 20 m band</h3>
+          <div class="legend" id="realism-legend"></div>
+          <div class="chart-scroll"><svg id="realism-svg" viewBox="0 0 440 250" role="img" aria-label="Median correlation between blurred B08 and real B8A as a function of blur width, per dataset"></svg></div>
+          <details class="table-view"><summary>Show as table</summary><div class="tbl-wrap" id="realism-table"></div></details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-sec" id="findings">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Paper Sec. 4</span>
+        <h2>What breaks, and for whom</h2>
+        <p>Seven frozen foundation models and two supervised baselines on five datasets: Sentinel-2 classification (m-EuroSAT, m-BigEarthNet), crop-type and land-cover segmentation (m-SA-crop, m-Chesapeake), and burn-scar mapping (HLS Burn Scar). Every number is a drop relative to the same model's clean score, averaged over three seeds.</p>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+  </section>
+
+  <section class="band-sec" id="fingerprints">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Paper Fig. 3</span>
+        <h2>Every model has its own fingerprint</h2>
+        <p>Relative drop from each model's clean score. Red cells lose accuracy, blue cells gain. Outlined cells are the worst in their column; hover any cell for its value. Gain families show the worse direction.</p>
+      </div>
+      <div class="figure">
+        <div class="fig-controls">
+          <span class="ctl-label">Severity</span>
+          <div class="pills" role="radiogroup" aria-label="Severity" id="hm-sev"></div>
+          <div class="scale" aria-hidden="true"><span>−5</span><canvas id="hm-scale" width="520" height="24"></canvas><span>100 % drop</span></div>
+        </div>
+        <div class="heatmaps" id="heatmaps"></div>
+        <p class="note">ViT-B/16 and U-Net are trained from scratch on each task; gray cells are conditions a model's input contract does not define (band-group defects need infrared bands).</p>
+        <details class="table-view"><summary>Show as table</summary><div class="tbl-wrap" id="hm-table"></div></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-sec" id="rankings">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Paper Sec. 4.5</span>
+        <h2>Robustness rankings do not transfer</h2>
+        <p>Rank the foundation models by how much they lose to resolution loss (left) and to a calibration gain error (right), at the severe setting. The two orders are anti-correlated on four of five datasets. RAMEN, which conditions on resolution, loses least to blur on every dataset and most to gain on every satellite dataset; DINOv3 is the reverse. A benchmark built only from blur and noise would miss this.</p>
+      </div>
+      <div class="figure">
+        <div class="fig-controls">
+          <span class="ctl-label">Dataset</span>
+          <div class="pills" role="radiogroup" aria-label="Dataset" id="rk-ds"></div>
+        </div>
+        <div class="legend" id="rk-legend"></div>
+        <div class="chart-scroll"><svg id="rk-svg" viewBox="0 0 640 330" role="img" aria-label="Slope chart of model ranks under resolution loss and calibration gain"></svg></div>
+        <p class="readout" id="rk-readout"></p>
+        <details class="table-view"><summary>Show as table</summary><div class="tbl-wrap" id="rk-table"></div></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-sec" id="chains">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Paper Figs. 4 and 5</span>
+        <h2>When defects compound</h2>
+        <p>The acquisition chain C1 applies a gain error, blur and coarse-grid noise together. Its excess is the drop beyond its worst single component. It peaks when blur has weakened a model without saturating it; at the most severe setting there is little left to lose.</p>
+      </div>
+      <div class="two">
+        <div class="figure">
+          <div class="fig-controls">
+            <label class="ctl-label" for="ch-ds">Dataset</label>
+            <select id="ch-ds"></select>
+            <label class="ctl-label" for="ch-model">Model</label>
+            <select id="ch-model"></select>
+            <span class="ctl-label">Gain</span>
+            <div class="pills" role="radiogroup" aria-label="Gain direction" id="ch-dir"></div>
+          </div>
+          <div class="legend" id="ch-legend"></div>
+          <div class="chart-scroll"><svg id="ch-svg" viewBox="0 0 520 300" role="img" aria-label="Relative drop by severity for P1, P2, P4 and the C1 chain"></svg></div>
+          <p class="readout" id="ch-readout"></p>
+          <details class="table-view"><summary>Show as table</summary><div class="tbl-wrap" id="ch-table"></div></details>
+        </div>
+        <div class="figure">
+          <h3>Largest compound excess</h3>
+          <div class="fig-controls">
+            <div class="pills" role="radiogroup" aria-label="Chain" id="ex-chain"></div>
+          </div>
+          <div class="excess-list" id="excess-list"></div>
+          <p class="note">Maximum over severities and gain directions. C2 excess is measured against its resolution-only and gain-only arms. Select a C1 row to plot it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-sec" id="recovery">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Paper Sec. 4.7</span>
+        <h2>A smarter readout helps, but not with blur</h2>
+        <p>Retraining only the linear readout on degraded training views, with the encoder still frozen, removes most of the noise and harmonization loss on m-BigEarthNet. Resolution loss still costs about a fifth of the clean score: the detail is gone from the encoder's features. The readout saw the test defect types during training, so this is the best case for defects you can anticipate.</p>
+      </div>
+      <div class="figure">
+        <div class="legend" id="rc-legend"></div>
+        <div class="chart-scroll"><svg id="rc-svg" viewBox="0 0 640 270" role="img" aria-label="Severe-setting drop per defect before and after degradation-aware readout training"></svg></div>
+        <details class="table-view"><summary>Show as table</summary><div class="tbl-wrap" id="rc-table"></div></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-sec" id="models">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Paper Fig. 2</span>
+        <h2>Models and clean scores</h2>
+        <p>Each foundation model runs under its own author-style frozen protocol with a clean-trained light head; clean scores anchor every relative drop. They are not a cross-model ranking, because heads and input contracts differ.</p>
+      </div>
+      <div class="figure"><div class="tbl-wrap" id="models-table"></div></div>
+    </div>
+  </section>
+
+  <section class="band-sec" id="code">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Code</span>
+        <h2>Run the degradations on your own model</h2>
+        <p>The operators work on any (bands, height, width) tensor in native product units. Apply them before your model's own normalization, keep the head trained on clean data, and report the drop from your clean score.</p>
+      </div>
+      <pre class="code"><span class="c"># pip install git+https://github.com/TODO/RSPDBench</span>
+<span class="k">import</span> rspdbench <span class="k">as</span> rb
+
+contract = rb.get_contract(<span class="s">"hls-burn-scars"</span>)
+bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span class="s">"RED"</span>, <span class="s">"NIR_NARROW"</span>, <span class="s">"SWIR_1"</span>, <span class="s">"SWIR_2"</span>]
+<span class="k">for</span> cond <span class="k">in</span> rb.conditions_for(contract, bands):        <span class="c"># 37 conditions</span>
+    y = rb.degrade(x, cond, band_ids=bands, contract=contract,
+                   sample_id=tile_id, band_mean=train_band_means)
+    <span class="c"># your preprocessing -&gt; frozen encoder -&gt; clean-trained head -&gt; metric</span></pre>
+    </div>
+  </section>
+
+  <section class="band-sec" id="citation">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Citation</span>
+        <h2>Cite RSPDBench</h2>
+      </div>
+      <div class="cite">
+        <pre class="code" id="bibtex">@inproceedings{faruk2027rspdbench,
+  title     = {{RSPDBench}: Benchmarking Vision Foundation Models on Earth
+               Observation Tasks Under Physically Grounded Remote-Sensing
+               Product Degradations},
+  author    = {Faruk, Tanjim Bin and Reza, Khondaker Masfiq and
+               Pallickara, Shrideep and Pallickara, Sangmi Lee},
+  booktitle = {Proceedings of the IEEE/CVF Winter Conference on
+               Applications of Computer Vision (WACV)},
+  year      = {2027},
+  note      = {arXiv:2609.23427}
+}</pre>
+        <button class="copy" id="copy-bib" type="button">Copy</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Imagery: HLS Burn Scars (NASA and IBM) via PANGAEA; Copernicus Sentinel-2 data via GEO-Bench. Benchmark datasets from GEO-Bench and PANGAEA.</span>
+    <span>© 2026 the authors · <a href="https://arxiv.org/abs/2609.23427" target="_blank" rel="noopener">arXiv:2609.23427</a></span>
+  </div>
+</footer>
+<div class="tooltip" id="tip" hidden></div>
+
+<script type="application/json" id="rspd-data">/*__DATA__*/</script>
+<script>
+(() => {
+  const DATA = JSON.parse(document.getElementById("rspd-data").textContent);
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = (id) => document.getElementById(id);
+
+  const DATASETS = [
+    { key: "m-eurosat", label: "m-EuroSAT", task: "land cover · Top-1 acc." },
+    { key: "m-bigearthnet", label: "m-BigEarthNet", task: "multi-label · micro-F1" },
+    { key: "m-SA-crop-type", label: "m-SA-crop", task: "crop type · mIoU" },
+    { key: "m-chesapeake", label: "m-Chesapeake", task: "aerial land cover · mIoU" },
+    { key: "hls-burn-scars", label: "HLS Burn Scar", task: "burn scars · mIoU" },
+  ];
+  const MODELS = [
+    { key: "dinov3_vit7b_web", label: "DINOv3-Web", kind: "RGB, web-image pretraining" },
+    { key: "dinov3_vit7b_sat", label: "DINOv3-Sat", kind: "RGB, satellite pretraining" },
+    { key: "dofa_v1_vit_large_e100", label: "DOFA", kind: "wavelength-conditioned" },
+    { key: "galileo_base", label: "Galileo", kind: "channel-grouped multispectral" },
+    { key: "panopticon_vitb14", label: "Panopticon", kind: "any-sensor, wavelength-conditioned" },
+    { key: "prithvi_eo_v2_600", label: "Prithvi 2.0", kind: "fixed multispectral ViT" },
+    { key: "ramen_base", label: "RAMEN", kind: "resolution-conditioned" },
+    { key: "vit_b16_scratch", label: "ViT-B/16*", kind: "supervised from scratch (classification)" },
+    { key: "unet_scratch", label: "U-Net*", kind: "supervised from scratch (segmentation)" },
+  ];
+  const FM = MODELS.slice(0, 7);
+  const LABEL = Object.fromEntries(MODELS.map((m) => [m.key, m.label]));
+  const DSLABEL = Object.fromEntries(DATASETS.map((d) => [d.key, d.label]));
+  const FAMS = ["P1", "P2", "P3", "P4", "C1", "C2"];
+  const FAM_CONDS = { P1: ["p1_s{s}"], P2: ["p2_gain_down_s{s}", "p2_gain_up_s{s}"], P3: ["p3_s{s}"], P4: ["p4_s{s}"], C1: ["c1_gain_down_s{s}", "c1_gain_up_s{s}"], C2: ["c2_gain_down_s{s}", "c2_gain_up_s{s}"] };
+
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const fmt = (v, d = 1) => (v == null || Number.isNaN(v) ? "–" : v.toFixed(d));
+  const el = (tag, attrs = {}, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const text = (parent, x, y, s, cls, anchor = "start", extra = {}) => {
+    const t = el("text", { x, y, class: cls, "text-anchor": anchor, ...extra }, parent);
+    t.textContent = s;
+    return t;
+  };
+  function famDrop(ds, model, fam, sev) {
+    const row = DATA.drops[ds] && DATA.drops[ds][model];
+    if (!row) return null;
+    let best = null;
+    for (const pat of FAM_CONDS[fam]) {
+      const c = pat.replace("{s}", sev);
+      if (c in row && (best == null || row[c] > best.v)) best = { v: row[c], c };
+    }
+    return best;
+  }
+
+  /* ---------- tooltip ---------- */
+  const tip = $("tip");
+  function showTip(evt, lines) {
+    tip.replaceChildren();
+    lines.forEach((ln, i) => {
+      const d = document.createElement("div");
+      if (i === 0) d.className = "tv";
+      if (ln.color) {
+        d.className = "tk";
+        const key = document.createElement("i");
+        key.style.background = ln.color;
+        d.appendChild(key);
+        d.appendChild(document.createTextNode(ln.text));
+      } else d.textContent = ln.text ?? ln;
+      tip.appendChild(d);
+    });
+    tip.hidden = false;
+    const r = evt.target.getBoundingClientRect ? evt.target.getBoundingClientRect() : { left: 0, top: 0, width: 0 };
+    const x = evt.clientX ?? r.left + r.width / 2, y = evt.clientY ?? r.top;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.min(window.innerWidth - w - 8, Math.max(8, x + 14)) + "px";
+    tip.style.top = Math.max(8, y - h - 12) + "px";
+  }
+  const hideTip = () => { tip.hidden = true; };
+
+  function radios(container, name, options, value, onChange) {
+    container.replaceChildren();
+    options.forEach((o) => {
+      const id = `${name}-${o.value}`;
+      const inp = document.createElement("input");
+      Object.assign(inp, { type: "radio", name, id, value: o.value, checked: o.value === value, disabled: !!o.disabled });
+      const lab = document.createElement("label");
+      lab.htmlFor = id;
+      if (o.code) { const b = document.createElement("b"); b.textContent = o.code; lab.appendChild(b); }
+      lab.appendChild(document.createTextNode(o.label));
+      inp.addEventListener("change", () => onChange(o.value));
+      container.append(inp, lab);
+    });
+  }
+  function table(container, head, rows) {
+    const t = document.createElement("table");
+    const th = t.createTHead().insertRow();
+    head.forEach((h) => { const c = document.createElement("th"); c.textContent = h; th.appendChild(c); });
+    const tb = t.createTBody();
+    rows.forEach((r) => { const tr = tb.insertRow(); r.forEach((v) => { const c = tr.insertCell(); c.textContent = v; if (v === "–") c.className = "muted"; }); });
+    container.replaceChildren(t);
+  }
+
+  /* ---------- explorer ---------- */
+  const EX = {
+    P1: { code: "P1", label: "Resolution", dir: false },
+    P2: { code: "P2", label: "Gain", dir: true },
+    P3: { code: "P3", label: "Misregistration", dir: false },
+    P4: { code: "P4", label: "Noise", dir: false },
+    C1: { code: "C1", label: "Acquisition", dir: true },
+    C2: { code: "C2", label: "Harmonization", dir: true },
+  };
+  const GAIN = { down: [0.97, 0.92, 0.85], up: [1.03, 1.08, 1.15] };
+  const HLS_BANDS = [["BLUE", "490 nm"], ["GREEN", "560 nm"], ["RED", "665 nm"], ["NIR", "865 nm"], ["SWIR1", "1610 nm"], ["SWIR2", "2190 nm"]];
+  const ROLES = {
+    P1: ["blurred", "blurred", "blurred", "blurred", "blurred", "blurred"],
+    P2: ["scaled", "scaled", "scaled", "scaled", "scaled", "scaled"],
+    P3: ["", "", "", "shifted", "shifted", "shifted"],
+    P4: ["noise", "noise", "noise", "noise", "noise", "noise"],
+    C1: ["all three", "all three", "all three", "all three", "all three", "all three"],
+    C2: ["", "", "", "all three", "all three", "all three"],
+  };
+  function exFile(f, s, d) {
+    const m = { P1: `p1_s${s}`, P2: `p2_gain_${d}_s${s}`, P3: `p3_s${s}`, P4: `p4_s${s}`, C1: `c1_gain_${d}_s${s}`, C2: `c2_gain_${d}_s${s}` };
+    return `assets/explorer/${m[f]}.jpg`;
+  }
+  function exCaption(f, s, d) {
+    const g = GAIN[d][s - 1], gs = `×${g.toFixed(2)}`, px = [0.3, 1, 2][s - 1], gsd = [30, 60, 120][s - 1], snr = [100, 33, 20][s - 1], sig = [0.5, 1, 2][s - 1];
+    const t = {
+      P1: [`Blur σ = ${sig} px`, s === 1 ? "on the native 30 m grid" : `and resampling to ${gsd} m`, "· Sentinel-2's own optics sit at the same blur-to-pixel ratio."],
+      P2: [`Every band ${gs}.`, "", "Band ratios such as NDVI are unchanged; only absolute brightness moves."],
+      P3: [`NIR and SWIR shifted ${px} px (${Math.round(px * 30)} m)`, "against the visible bands.", "Look for colored fringes at edges."],
+      P4: [`Noise at SNR ${snr}`, `(std = ${[1, 3, 5][s - 1]}% of each band's mean).`, "Sentinel-2 requires SNR 72–174."],
+      C1: [`Gain ${gs}, blur to ${gsd} m, then noise at SNR ${snr}`, "on the coarse grid.", "One poor acquisition, three defects at once."],
+      C2: [`NIR and SWIR resampled to ${gsd} m, shifted ${px} px, scaled ${gs};`, "visible bands untouched.", "Band ratios change."],
+    }[f];
+    return t;
+  }
+  const ex = { f: "P3", s: 3, d: "down" };
+  const preload = new Set();
+  function exRender() {
+    const conf = EX[ex.f];
+    $("img-after").src = exFile(ex.f, ex.s, ex.d);
+    $("tag-after").textContent = `${conf.code} · S${ex.s}${conf.dir ? (ex.d === "down" ? " ↓" : " ↑") : ""}`;
+    const [a, b, c] = exCaption(ex.f, ex.s, ex.d);
+    const cap = $("ex-caption");
+    cap.replaceChildren(document.createTextNode(`${a} ${b} `));
+    const m = document.createElement("span");
+    m.className = "mono";
+    m.textContent = c;
+    cap.appendChild(m);
+    const bands = $("ex-bands");
+    bands.replaceChildren();
+    HLS_BANDS.forEach(([name, wl], i) => {
+      const role = ROLES[ex.f][i];
+      const d = document.createElement("div");
+      d.className = "band" + (role ? " hit" : "");
+      const bb = document.createElement("b"); bb.textContent = name;
+      const w = document.createElement("span"); w.textContent = wl;
+      const r = document.createElement("span"); r.className = "role"; r.textContent = role || "unchanged";
+      d.append(bb, w, r);
+      bands.appendChild(d);
+    });
+    document.querySelectorAll("#ex-dir input").forEach((i) => { i.disabled = !conf.dir; });
+    updateLoupeImage();
+  }
+  radios($("ex-family"), "exf", Object.entries(EX).map(([k, v]) => ({ value: k, code: v.code, label: v.label })), ex.f, (v) => { ex.f = v; exRender(); });
+  radios($("ex-sev"), "exs", [1, 2, 3].map((s) => ({ value: String(s), label: ["Mild", "Moderate", "Severe"][s - 1] })), String(ex.s), (v) => { ex.s = +v; exRender(); });
+  radios($("ex-dir"), "exd", [{ value: "down", label: "Darker" }, { value: "up", label: "Brighter" }], ex.d, (v) => { ex.d = v; exRender(); });
+  const viewer = $("viewer"), split = $("split");
+  split.addEventListener("input", () => viewer.style.setProperty("--split", split.value + "%"));
+  // Loupe: magnifies the degraded product under the pointer.
+  const loupe = $("loupe"), loupeToggle = $("ex-loupe");
+  function updateLoupeImage() { loupe.style.backgroundImage = `url("${$("img-after").getAttribute("src")}")`; }
+  function moveLoupe(evt) {
+    if (!loupeToggle.checked) return;
+    const r = viewer.getBoundingClientRect(), x = evt.clientX - r.left, y = evt.clientY - r.top, z = 3, L = 150;
+    loupe.hidden = false;
+    loupe.style.left = x - L / 2 + "px"; loupe.style.top = y - L / 2 + "px";
+    loupe.style.backgroundSize = `${r.width * z}px ${r.height * z}px`;
+    loupe.style.backgroundPosition = `${-(x * z - L / 2)}px ${-(y * z - L / 2)}px`;
+  }
+  viewer.addEventListener("pointermove", moveLoupe);
+  viewer.addEventListener("pointerleave", () => { loupe.hidden = true; });
+  loupeToggle.addEventListener("change", () => { if (!loupeToggle.checked) loupe.hidden = true; });
+  function preloadAll() {
+    for (const f of Object.keys(EX)) for (const s of [1, 2, 3]) for (const d of ["down", "up"]) {
+      const src = exFile(f, s, d);
+      if (!preload.has(src)) { preload.add(src); const im = new Image(); im.src = src; }
+    }
+  }
+  exRender();
+  if ("requestIdleCallback" in window) requestIdleCallback(preloadAll); else setTimeout(preloadAll, 800);
+
+  /* ---------- defect cards ---------- */
+  const CARDS = [
+    ["P1", "Resolution loss", "A coarser sensor or resampling to a coarser grid: Gaussian PSF, then N×N area integration, then resize back.", "σ = N/2, N = 1, 2, 4 · contrast at Nyquist ≈ 0.29, inside Sentinel-2's 0.15–0.30 spec", "p1_s3"],
+    ["P2", "Calibration gain", "Every band scaled by the same factor, as calibration or cross-sensor drift does.", "±3 / 8 / 15 % · Sentinel-2 requires < 5 %, Landsat 8 ±3 %", "p2_gain_down_s3"],
+    ["P3", "Band misregistration", "The red-edge, narrow-NIR and SWIR bands slide against the fixed visible bands.", "0.3 / 1 / 2 px · Sentinel-2 requires < 0.6 px between 10 m and 20 m bands", "p3_s3"],
+    ["P4", "Sensor noise", "Band-wise Gaussian noise scaled to each band's mean signal.", "SNR 100 / 33 / 20 · Sentinel-2 requires 72–174 at reference radiance", "p4_s3"],
+    ["C1", "Poor acquisition", "Gain error, blur and noise in one capture, with the noise added on the coarse grid.", "P2 → P1 → P4 at matched severity, both gain directions", "c1_gain_down_s3"],
+    ["C2", "Harmonization residuals", "Infrared bands resampled, shifted and rescaled when sensors are merged; visible bands stay fixed.", "Band-selective, so NDVI-type ratios change", "c2_gain_down_s3"],
+  ];
+  const cardsEl = $("defect-cards");
+  CARDS.forEach(([code, name, desc, anchor, img]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "defect";
+    b.setAttribute("aria-label", `${code} ${name}: show in the explorer`);
+    const im = document.createElement("img");
+    im.src = `assets/explorer/${img}.jpg`; im.alt = ""; im.width = 96; im.height = 96; im.loading = "lazy";
+    const body = document.createElement("div");
+    const id = document.createElement("div"); id.className = "id"; id.textContent = code;
+    const h = document.createElement("h3"); h.textContent = name;
+    const p = document.createElement("p"); p.textContent = desc;
+    const a = document.createElement("div"); a.className = "anchor"; a.textContent = anchor;
+    body.append(id, h, p, a);
+    b.append(im, body);
+    b.addEventListener("click", () => {
+      ex.f = code; ex.s = 3;
+      document.querySelector(`#ex-family input[value="${code}"]`).checked = true;
+      document.querySelector(`#ex-sev input[value="3"]`).checked = true;
+      exRender();
+      $("top").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    });
+    cardsEl.appendChild(b);
+  });
+
+  /* ---------- stat tiles ---------- */
+  function excessOf(ds, model, chain) {
+    const row = DATA.drops[ds] && DATA.drops[ds][model];
+    if (!row) return null;
+    let best = null;
+    for (const s of [1, 2, 3]) for (const d of ["down", "up"]) {
+      const c = chain === "C1" ? `c1_gain_${d}_s${s}` : `c2_gain_${d}_s${s}`;
+      const comps = chain === "C1" ? [`p1_s${s}`, `p2_gain_${d}_s${s}`, `p4_s${s}`] : [`c2_resolution_only_s${s}`, `c2_gain_only_${d}_s${s}`];
+      if (!(c in row) || comps.some((k) => !(k in row))) continue;
+      const worst = Math.max(...comps.map((k) => row[k]));
+      const e = row[c] - worst;
+      if (best == null || e > best.e) best = { e, s, d, chain: row[c], comp: worst, compName: comps[comps.map((k) => row[k]).indexOf(worst)] };
+    }
+    return best;
+  }
+  const allExcess = (chain) => DATASETS.flatMap((ds) => MODELS.map((m) => ({ ds: ds.key, m: m.key, x: excessOf(ds.key, m.key, chain) }))).filter((r) => r.x).sort((a, b) => b.x.e - a.x.e);
+  function kendall(a, b) {
+    let c = 0, d = 0;
+    for (let i = 0; i < a.length; i++) for (let j = i + 1; j < a.length; j++) {
+      const s = Math.sign(a[i] - a[j]) * Math.sign(b[i] - b[j]);
+      if (s > 0) c++; else if (s < 0) d++;
+    }
+    return (c - d) / (a.length * (a.length - 1) / 2);
+  }
+  const tauByDs = DATASETS.map((ds) => {
+    const xs = FM.map((m) => famDrop(ds.key, m.key, "P1", 3)).filter(Boolean);
+    const ys = FM.map((m) => famDrop(ds.key, m.key, "P2", 3)).filter(Boolean);
+    return kendall(xs.map((v) => v.v), ys.map((v) => v.v));
+  });
+  const median = (arr) => { const s = [...arr].sort((a, b) => a - b); const n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };
+  const topC1 = allExcess("C1")[0];
+  const p1Mit = DATA.mitigation.P1;
+  const TILES = [
+    [topC1.x.e.toFixed(0), "pp", `extra drop from one compound chain beyond its worst single defect (${LABEL[topC1.m]}, ${DSLABEL[topC1.ds]})`],
+    [(median(tauByDs) < 0 ? "−" : "") + Math.abs(median(tauByDs)).toFixed(2), "", "Kendall τ between model rankings under blur and under gain error, median over five datasets: the orders largely reverse"],
+    [p1Mit.aware.toFixed(0), "%", `severe-blur drop left after retraining the readout on degraded views (from ${p1Mit.original.toFixed(0)}%)`],
+    ["37", "", "test conditions per multispectral model: 4 primitives, 2 chains, 3 severities, both gain directions"],
+  ];
+  const tilesEl = $("tiles");
+  TILES.forEach(([v, unit, desc]) => {
+    const t = document.createElement("div"); t.className = "tile";
+    const val = document.createElement("div"); val.className = "value"; val.textContent = v;
+    if (unit) { const u = document.createElement("small"); u.textContent = unit; val.appendChild(u); }
+    const p = document.createElement("p"); p.textContent = desc;
+    t.append(val, p);
+    tilesEl.appendChild(t);
+  });
+
+  /* ---------- color: OKLab interpolation for the diverging scale ---------- */
+  const hex2rgb = (h) => { h = h.replace("#", ""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
+  const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const delin = (c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
+  function toOklab([r, g, b]) {
+    r = lin(r); g = lin(g); b = lin(b);
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b), m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b), s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s];
+  }
+  function fromOklab([L, a, b]) {
+    const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3, m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3, s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+    const rgb = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s];
+    return "#" + rgb.map((c) => Math.round(Math.min(1, Math.max(0, delin(c))) * 255).toString(16).padStart(2, "0")).join("");
+  }
+  const mix = (h1, h2, t) => { const a = toOklab(hex2rgb(h1)), b = toOklab(hex2rgb(h2)); return fromOklab(a.map((v, i) => v + (b[i] - v) * t)); };
+  const luminance = (h) => { const [r, g, b] = hex2rgb(h).map(lin); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const posT = (v) => Math.sqrt(Math.min(Math.max(v, 0), 100) / 100);
+  function divColor(v) {
+    const mid = css("--div-mid"), pos = css("--div-pos"), neg = css("--div-neg");
+    return v >= 0 ? mix(mid, pos, posT(v)) : mix(mid, neg, Math.min(-v, 5) / 5);
+  }
+
+  /* ---------- heatmaps ---------- */
+  let hmSev = 3;
+  function drawScale() {
+    const c = $("hm-scale"), ctx = c.getContext("2d"), W = c.width, H = c.height;
+    const negW = W * 0.12;
+    for (let x = 0; x < W; x++) {
+      const v = x < negW ? -5 + (x / negW) * 5 : 100 * ((x - negW) / (W - negW)) ** 2;
+      ctx.fillStyle = divColor(v);
+      ctx.fillRect(x, 0, 1, H);
+    }
+  }
+  function drawHeatmaps() {
+    const wrap = $("heatmaps");
+    wrap.replaceChildren();
+    const rows = [];
+    DATASETS.forEach((ds) => {
+      const box = document.createElement("div"); box.className = "hm";
+      const h = document.createElement("h3"); h.textContent = ds.label;
+      const sub = document.createElement("div"); sub.className = "sub"; sub.textContent = ds.task;
+      box.append(h, sub);
+      const models = MODELS.filter((m) => DATA.drops[ds.key] && DATA.drops[ds.key][m.key]);
+      const cw = 24, ch = 20, left = 74, top = 18;
+      const svg = el("svg", { viewBox: `0 0 ${left + cw * 6 + 4} ${top + ch * models.length + 4}`, role: "img", "aria-label": `Fingerprint heatmap for ${ds.label}` });
+      FAMS.forEach((f, j) => text(svg, left + j * cw + cw / 2, 12, f, "lbl", "middle"));
+      const colMax = FAMS.map((f) => {
+        let best = null;
+        models.forEach((m) => { const d = famDrop(ds.key, m.key, f, hmSev); if (d && (best == null || d.v > best.v)) best = { v: d.v, m: m.key }; });
+        return best;
+      });
+      models.forEach((m, i) => {
+        text(svg, left - 6, top + i * ch + ch / 2 + 4, m.label, "lbl", "end");
+        const vals = [];
+        FAMS.forEach((f, j) => {
+          const d = famDrop(ds.key, m.key, f, hmSev);
+          const x = left + j * cw, y = top + i * ch;
+          const isMax = d && colMax[j] && colMax[j].m === m.key;
+          const r = el("rect", { x, y, width: cw, height: ch, rx: 3, class: "cell" + (d ? "" : " na") + (isMax ? " max" : ""), tabindex: d ? 0 : -1 }, svg);
+          vals.push(d ? fmt(d.v) : "–");
+          if (!d) return;
+          r.setAttribute("fill", divColor(d.v));
+          const sd = DATA.std[ds.key][m.key][d.c];
+          const lines = [{ text: `${fmt(d.v)}% ${d.v < 0 ? "gain" : "drop"}` }, { text: `${m.label} · ${ds.label}` }, { text: `${f} S${hmSev}${d.c.includes("_up_") ? " (gain up)" : d.c.includes("_down_") ? " (gain down)" : ""} · ±${fmt(sd)} over seeds` }];
+          r.addEventListener("pointermove", (e) => showTip(e, lines));
+          r.addEventListener("pointerleave", hideTip);
+          r.addEventListener("focus", (e) => showTip({ target: r, clientX: r.getBoundingClientRect().right, clientY: r.getBoundingClientRect().top }, lines));
+          r.addEventListener("blur", hideTip);
+          if (isMax) {
+            const fill = divColor(d.v);
+            text(svg, x + cw / 2, y + ch / 2 + 4, d.v >= 99.5 ? "100" : d.v >= 10 ? d.v.toFixed(0) : d.v.toFixed(1), "", "middle", { fill: luminance(fill) > 0.32 ? "#0b0b0b" : "#ffffff", "font-size": "10.5", "font-weight": "650", "pointer-events": "none" });
+          }
+        });
+        rows.push([ds.label, m.label, ...vals]);
+      });
+      box.appendChild(svg);
+      wrap.appendChild(box);
+    });
+    table($("hm-table"), ["Dataset", "Model", ...FAMS.map((f) => `${f} S${hmSev} (%)`)], rows);
+  }
+  radios($("hm-sev"), "hms", [1, 2, 3].map((s) => ({ value: String(s), label: `S${s} ${["mild", "moderate", "severe"][s - 1]}` })), "3", (v) => { hmSev = +v; drawHeatmaps(); });
+
+  /* ---------- ranking slope chart ---------- */
+  let rkDs = "m-eurosat";
+  const RK_EMPH = { ramen_base: "--s1", dinov3_vit7b_sat: "--s2" };
+  function drawRanks() {
+    const svg = $("rk-svg"); svg.replaceChildren();
+    const W = 640, H = 330, top = 40, bottom = 18, xL = 190, xR = 450;
+    const items = FM.map((m) => ({ m, a: famDrop(rkDs, m.key, "P1", 3), b: famDrop(rkDs, m.key, "P2", 3) })).filter((r) => r.a && r.b);
+    const rankBy = (k) => { const s = [...items].sort((p, q) => q[k].v - p[k].v); return new Map(s.map((r, i) => [r.m.key, i])); };
+    const ra = rankBy("a"), rb = rankBy("b");
+    const step = (H - top - bottom) / Math.max(1, items.length - 1);
+    const y = (r) => top + r * step;
+    text(svg, xL, 16, "Resolution loss (P1)", "lbl-strong", "middle");
+    text(svg, xR, 16, "Calibration gain (P2)", "lbl-strong", "middle");
+    text(svg, xL, 30, "most hurt at top", "lbl", "middle");
+    text(svg, xR, 30, "most hurt at top", "lbl", "middle");
+    el("line", { x1: xL, x2: xL, y1: top - 6, y2: H - bottom + 6, class: "grid-line" }, svg);
+    el("line", { x1: xR, x2: xR, y1: top - 6, y2: H - bottom + 6, class: "grid-line" }, svg);
+    const order = [...items].sort((p, q) => (RK_EMPH[p.m.key] ? 1 : 0) - (RK_EMPH[q.m.key] ? 1 : 0));
+    order.forEach(({ m, a, b }) => {
+      const color = RK_EMPH[m.key] ? css(RK_EMPH[m.key]) : css("--deemph");
+      const ya = y(ra.get(m.key)), yb = y(rb.get(m.key));
+      const g = el("g", { tabindex: 0 }, svg);
+      el("line", { x1: xL, y1: ya, x2: xR, y2: yb, stroke: color, "stroke-width": RK_EMPH[m.key] ? 2.5 : 2, "stroke-linecap": "round" }, g);
+      el("circle", { cx: xL, cy: ya, r: 4.5, fill: color, stroke: css("--surface"), "stroke-width": 2 }, g);
+      el("circle", { cx: xR, cy: yb, r: 4.5, fill: color, stroke: css("--surface"), "stroke-width": 2 }, g);
+      text(g, xL - 12, ya + 4, `${m.label}  ${fmt(a.v)}%`, RK_EMPH[m.key] ? "lbl-strong" : "lbl", "end");
+      text(g, xR + 12, yb + 4, `${fmt(b.v)}%  ${m.label}`, RK_EMPH[m.key] ? "lbl-strong" : "lbl", "start");
+      const hit = el("line", { x1: xL, y1: ya, x2: xR, y2: yb, stroke: "transparent", "stroke-width": 16 }, g);
+      const lines = [{ text: m.label }, { text: `P1 drop ${fmt(a.v)}% · rank ${ra.get(m.key) + 1} of ${items.length}` }, { text: `P2 drop ${fmt(b.v)}% · rank ${rb.get(m.key) + 1} of ${items.length}` }];
+      hit.addEventListener("pointermove", (e) => showTip(e, lines));
+      hit.addEventListener("pointerleave", hideTip);
+      g.addEventListener("focus", () => { const r = g.getBoundingClientRect(); showTip({ target: g, clientX: r.left + r.width / 2, clientY: r.top }, lines); });
+      g.addEventListener("blur", hideTip);
+    });
+    const tau = kendall(items.map((r) => r.a.v), items.map((r) => r.b.v));
+    $("rk-readout").textContent = `Kendall τ between the two orders on ${DSLABEL[rkDs]}: ${tau < 0 ? "−" : ""}${Math.abs(tau).toFixed(2)} (1 = same order, −1 = reversed). Median over the five datasets: −${Math.abs(median(tauByDs)).toFixed(2)}.`;
+    table($("rk-table"), ["Model", "P1 S3 drop (%)", "P1 rank", "P2 S3 drop (%)", "P2 rank"], items.map((r) => [r.m.label, fmt(r.a.v), String(ra.get(r.m.key) + 1), fmt(r.b.v), String(rb.get(r.m.key) + 1)]));
+  }
+  radios($("rk-ds"), "rkd", DATASETS.map((d) => ({ value: d.key, label: d.label })), rkDs, (v) => { rkDs = v; drawRanks(); });
+  const rkLeg = $("rk-legend");
+  [["RAMEN (resolution-conditioned)", "--s1"], ["DINOv3-Sat (RGB)", "--s2"], ["Other foundation models", "--deemph"]].forEach(([n, v]) => {
+    const s = document.createElement("span"); const i = document.createElement("i"); i.style.background = `var(${v})`; s.append(i, document.createTextNode(n)); rkLeg.appendChild(s);
+  });
+
+  /* ---------- chain explorer ---------- */
+  const ch = { ds: "m-SA-crop-type", m: "dinov3_vit7b_sat", d: "down" };
+  const CH_SERIES = [["C1", "--s1", "C1 chain"], ["P1", "--s2", "P1 resolution"], ["P4", "--s3", "P4 noise"], ["P2", "--s4", "P2 gain"]];
+  function chainSeries() {
+    const row = DATA.drops[ch.ds][ch.m];
+    const get = (k) => (k in row ? row[k] : null);
+    return {
+      C1: [1, 2, 3].map((s) => get(`c1_gain_${ch.d}_s${s}`)),
+      P1: [1, 2, 3].map((s) => get(`p1_s${s}`)),
+      P4: [1, 2, 3].map((s) => get(`p4_s${s}`)),
+      P2: [1, 2, 3].map((s) => get(`p2_gain_${ch.d}_s${s}`)),
+    };
+  }
+  function niceMax(v) { const steps = [5, 10, 20, 25, 40, 50, 60, 80, 100]; return steps.find((s) => s >= v) ?? 100; }
+  function drawChain() {
+    const svg = $("ch-svg"); svg.replaceChildren();
+    const W = 520, H = 300, L = 44, R = 96, T = 14, B = 34;
+    const S = chainSeries();
+    const maxV = niceMax(Math.max(5, ...Object.values(S).flat().filter((v) => v != null)));
+    const minV = Math.min(0, ...Object.values(S).flat().filter((v) => v != null));
+    const lo = minV < 0 ? -Math.ceil(-minV / 5) * 5 : 0;
+    const x = (i) => L + (i * (W - L - R)) / 2, y = (v) => T + ((maxV - v) / (maxV - lo)) * (H - T - B);
+    const ticks = 5;
+    for (let k = 0; k <= ticks; k++) {
+      const v = lo + ((maxV - lo) * k) / ticks;
+      el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), class: "grid-line" }, svg);
+      text(svg, L - 8, y(v) + 4, `${Math.round(v)}%`, "lbl", "end", { "font-size": "11" });
+    }
+    ["S1 mild", "S2 moderate", "S3 severe"].forEach((s, i) => text(svg, x(i), H - 12, s, "lbl", "middle"));
+    // excess wash between C1 and its worst component
+    const comp = [0, 1, 2].map((i) => Math.max(...["P1", "P4", "P2"].map((k) => S[k][i] ?? -Infinity)));
+    const top = S.C1.map((v, i) => [x(i), y(v)]), bot = comp.map((v, i) => [x(i), y(Math.min(v, S.C1[i]))]).reverse();
+    el("path", { d: "M" + [...top, ...bot].map((p) => p.join(",")).join("L") + "Z", fill: css("--s1"), "fill-opacity": 0.1, stroke: "none" }, svg);
+    CH_SERIES.slice().reverse().forEach(([k, v]) => {
+      const pts = S[k].map((val, i) => [x(i), y(val)]);
+      el("path", { d: "M" + pts.map((p) => p.join(",")).join("L"), fill: "none", stroke: css(v), "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+      pts.forEach(([px, py]) => el("circle", { cx: px, cy: py, r: 4, fill: css(v), stroke: css("--surface"), "stroke-width": 2 }, svg));
+    });
+    // direct end labels, spaced to avoid collisions
+    const ends = CH_SERIES.map(([k, v]) => ({ n: k, v, y: y(S[k][2]), val: S[k][2] })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+    ends.forEach((e) => {
+      el("line", { x1: x(2) + 6, x2: x(2) + 14, y1: y(e.val), y2: e.y - 4, stroke: css("--axis") }, svg);
+      text(svg, x(2) + 18, e.y, `${e.n} ${fmt(e.val)}%`, "lbl", "start", { "font-size": "11.5" });
+    });
+    // hover columns
+    [0, 1, 2].forEach((i) => {
+      const hit = el("rect", { x: x(i) - (W - L - R) / 4, y: T, width: (W - L - R) / 2, height: H - T - B, fill: "transparent" }, svg);
+      const lines = [{ text: `S${i + 1} · excess ${fmt(S.C1[i] - comp[i])} pp` }, ...CH_SERIES.map(([k, v, n]) => ({ text: `${fmt(S[k][i])}%  ${n}`, color: css(v) }))];
+      hit.addEventListener("pointermove", (e) => showTip(e, lines));
+      hit.addEventListener("pointerleave", hideTip);
+    });
+    const ex = excessOf(ch.ds, ch.m, "C1");
+    const exDir = [0, 1, 2].map((i) => S.C1[i] - comp[i]);
+    const iBest = exDir.indexOf(Math.max(...exDir));
+    $("ch-readout").textContent = `${LABEL[ch.m]} on ${DSLABEL[ch.ds]}: C1 exceeds its worst component by ${fmt(exDir[iBest])} pp at S${iBest + 1} (${fmt(S.C1[iBest])}% vs ${fmt(comp[iBest])}%).` + (ex && (ex.d !== ch.d) ? ` Largest overall: ${fmt(ex.e)} pp with gain ${ex.d}.` : "");
+    table($("ch-table"), ["Severity", ...CH_SERIES.map((s) => `${s[2]} (%)`), "Excess (pp)"], [0, 1, 2].map((i) => [`S${i + 1}`, ...CH_SERIES.map(([k]) => fmt(S[k][i])), fmt(S.C1[i] - comp[i])]));
+  }
+  const chDs = $("ch-ds"), chModel = $("ch-model");
+  DATASETS.forEach((d) => chDs.add(new Option(d.label, d.key)));
+  function fillModels() {
+    chModel.replaceChildren();
+    MODELS.filter((m) => DATA.drops[ch.ds] && DATA.drops[ch.ds][m.key]).forEach((m) => chModel.add(new Option(m.label, m.key)));
+    if (!DATA.drops[ch.ds][ch.m]) ch.m = chModel.options[0].value;
+    chModel.value = ch.m;
+  }
+  chDs.value = ch.ds; fillModels();
+  chDs.addEventListener("change", () => { ch.ds = chDs.value; fillModels(); drawChain(); markExcess(); });
+  chModel.addEventListener("change", () => { ch.m = chModel.value; drawChain(); markExcess(); });
+  radios($("ch-dir"), "chd", [{ value: "down", label: "Down" }, { value: "up", label: "Up" }], ch.d, (v) => { ch.d = v; drawChain(); });
+  const chLeg = $("ch-legend");
+  CH_SERIES.forEach(([k, v, n]) => { const s = document.createElement("span"); const i = document.createElement("i"); i.style.background = `var(${v})`; s.append(i, document.createTextNode(n)); chLeg.appendChild(s); });
+
+  let exChain = "C1";
+  function drawExcessList() {
+    const list = $("excess-list"); list.replaceChildren();
+    const rows = allExcess(exChain).slice(0, 8);
+    const max = rows[0].x.e;
+    rows.forEach((r) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "excess-row";
+      b.dataset.ds = r.ds; b.dataset.m = r.m;
+      const who = document.createElement("span"); who.className = "who"; who.textContent = LABEL[r.m];
+      const sm = document.createElement("small"); sm.textContent = `${DSLABEL[r.ds]} · S${r.x.s} ${r.x.d === "down" ? "↓" : "↑"}`; who.appendChild(sm);
+      const bar = document.createElement("span"); bar.className = "bar"; const fill = document.createElement("span"); fill.style.width = (100 * r.x.e) / max + "%"; bar.appendChild(fill);
+      const val = document.createElement("span"); val.className = "val"; val.textContent = `${fmt(r.x.e)} pp`;
+      b.append(who, bar, val);
+      b.disabled = exChain !== "C1";
+      if (exChain === "C1") b.addEventListener("click", () => { ch.ds = r.ds; chDs.value = r.ds; fillModels(); ch.m = r.m; chModel.value = r.m; ch.d = r.x.d; document.querySelector(`#ch-dir input[value="${r.x.d}"]`).checked = true; drawChain(); markExcess(); });
+      list.appendChild(b);
+    });
+    markExcess();
+  }
+  function markExcess() { document.querySelectorAll(".excess-row").forEach((b) => b.setAttribute("aria-pressed", String(exChain === "C1" && b.dataset.ds === ch.ds && b.dataset.m === ch.m))); }
+  radios($("ex-chain"), "exc", [{ value: "C1", label: "C1 acquisition" }, { value: "C2", label: "C2 harmonization" }], exChain, (v) => { exChain = v; drawExcessList(); });
+
+  /* ---------- recovery dumbbells ---------- */
+  function drawRecovery() {
+    const svg = $("rc-svg"); svg.replaceChildren();
+    const W = 640, H = 270, L = 130, R = 40, T = 26, B = 30;
+    const fams = ["P1", "C1", "C2", "P4", "P2", "P3"].filter((f) => DATA.mitigation[f]);
+    const NAMES = { P1: "P1 resolution", P2: "P2 gain", P3: "P3 misregistration", P4: "P4 noise", C1: "C1 acquisition", C2: "C2 harmonization" };
+    const maxV = 60, x = (v) => L + (Math.max(0, v) / maxV) * (W - L - R), step = (H - T - B) / (fams.length - 1), y = (i) => T + i * step;
+    [0, 10, 20, 30, 40, 50, 60].forEach((v) => { el("line", { x1: x(v), x2: x(v), y1: T - 10, y2: H - B + 6, class: "grid-line" }, svg); text(svg, x(v), H - 8, `${v}%`, "lbl", "middle", { "font-size": "11" }); });
+    const cO = css("--deemph"), cA = css("--s1");
+    fams.forEach((f, i) => {
+      const m = DATA.mitigation[f];
+      text(svg, L - 12, y(i) + 4, NAMES[f], "lbl", "end");
+      el("line", { x1: x(m.aware), x2: x(m.original), y1: y(i), y2: y(i), stroke: css("--axis"), "stroke-width": 2 }, svg);
+      el("circle", { cx: x(m.original), cy: y(i), r: 5, fill: cO, stroke: css("--surface"), "stroke-width": 2 }, svg);
+      el("circle", { cx: x(m.aware), cy: y(i), r: 5, fill: cA, stroke: css("--surface"), "stroke-width": 2 }, svg);
+      text(svg, x(m.original) + 9, y(i) + 4, `${fmt(m.original)}%`, "lbl", "start", { "font-size": "11" });
+      if (m.original - m.aware > 4) text(svg, x(m.aware) - 9, y(i) + 4, `${fmt(m.aware)}%`, "lbl-strong", "end", { "font-size": "11" });
+      const hit = el("rect", { x: L, y: y(i) - step / 2, width: W - L - R, height: step, fill: "transparent" }, svg);
+      const lines = [{ text: NAMES[f] }, { text: `${fmt(m.original)}%  clean-trained readout`, color: cO }, { text: `${fmt(m.aware)}%  degradation-aware readout`, color: cA }, { text: `mean of ${m.n} frozen encoders, severe setting` }];
+      hit.addEventListener("pointermove", (e) => showTip(e, lines));
+      hit.addEventListener("pointerleave", hideTip);
+    });
+    table($("rc-table"), ["Defect (S3)", "Clean-trained readout (%)", "Degradation-aware readout (%)", "Encoders"], fams.map((f) => [NAMES[f], fmt(DATA.mitigation[f].original), fmt(DATA.mitigation[f].aware), String(DATA.mitigation[f].n)]));
+  }
+  const rcLeg = $("rc-legend");
+  [["Clean-trained readout", "--deemph"], ["Degradation-aware readout", "--s1"]].forEach(([n, v]) => { const s = document.createElement("span"); const i = document.createElement("i"); i.className = "dot"; i.style.background = `var(${v})`; s.append(i, document.createTextNode(n)); rcLeg.appendChild(s); });
+
+  /* ---------- realism chart ---------- */
+  const RL = [["m-eurosat", "--s1", "m-EuroSAT"], ["m-bigearthnet", "--s2", "m-BigEarthNet"], ["m-SA-crop-type", "--s3", "m-SA-crop"]];
+  function drawRealism() {
+    const svg = $("realism-svg"); svg.replaceChildren();
+    const W = 440, H = 250, L = 48, R = 104, T = 14, B = 36, lo = 0.95, hi = 1.0;
+    const x = (s) => L + (s / 2) * (W - L - R), y = (r) => T + ((hi - r) / (hi - lo)) * (H - T - B);
+    [0.95, 0.96, 0.97, 0.98, 0.99, 1.0].forEach((v) => { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), class: "grid-line" }, svg); text(svg, L - 8, y(v) + 4, v.toFixed(2), "lbl", "end", { "font-size": "11" }); });
+    [0, 0.5, 1, 1.5, 2].forEach((s) => text(svg, x(s), H - 18, String(s), "lbl", "middle", { "font-size": "11" }));
+    text(svg, (L + W - R) / 2, H - 3, "blur width σ (native pixels), ×2 area reduction", "lbl", "middle", { "font-size": "11" });
+    el("line", { x1: x(1), x2: x(1), y1: T, y2: H - B, stroke: css("--ink-3"), "stroke-width": 1 }, svg);
+    text(svg, x(1) + 5, H - B - 6, "P1-S2 uses σ = 1", "lbl", "start", { "font-size": "11" });
+    const ends = [];
+    RL.forEach(([k, v, n]) => {
+      const pts = DATA.realism[k];
+      el("path", { d: "M" + pts.map((p) => `${x(p.sigma)},${y(p.r)}`).join("L"), fill: "none", stroke: css(v), "stroke-width": 2, "stroke-linejoin": "round" }, svg);
+      const best = pts.reduce((a, b) => (b.r > a.r ? b : a));
+      el("circle", { cx: x(best.sigma), cy: y(best.r), r: 4.5, fill: css(v), stroke: css("--surface"), "stroke-width": 2 }, svg);
+      ends.push({ n, y: y(pts[pts.length - 1].r), y0: y(pts[pts.length - 1].r) });
+      pts.forEach((p) => {
+        const hit = el("circle", { cx: x(p.sigma), cy: y(p.r), r: 10, fill: "transparent" }, svg);
+        const lines = [{ text: `r = ${p.r.toFixed(4)}` }, { text: `${n} · σ = ${p.sigma}`, color: css(v) }];
+        hit.addEventListener("pointermove", (e) => showTip(e, lines));
+        hit.addEventListener("pointerleave", hideTip);
+      });
+    });
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+    ends.forEach((e) => text(svg, W - R + 8, e.y + 4, e.n, "lbl", "start", { "font-size": "11.5" }));
+    table($("realism-table"), ["σ (px)", ...RL.map((r) => `${r[2]} median r`)], DATA.realism["m-eurosat"].map((p, i) => [String(p.sigma), ...RL.map(([k]) => DATA.realism[k][i].r.toFixed(4))]));
+  }
+  const rlLeg = $("realism-legend");
+  RL.forEach(([k, v, n]) => { const s = document.createElement("span"); const i = document.createElement("i"); i.style.background = `var(${v})`; s.append(i, document.createTextNode(n)); rlLeg.appendChild(s); });
+
+  /* ---------- models table ---------- */
+  function drawModels() {
+    const head = ["Model", "Design", ...DATASETS.map((d) => d.label)];
+    const rows = MODELS.map((m) => [m.label, m.kind, ...DATASETS.map((d) => (DATA.clean[d.key] && DATA.clean[d.key][m.key] != null ? fmt(DATA.clean[d.key][m.key]) : "–"))]);
+    table($("models-table"), head, rows);
+    const note = document.createElement("p"); note.className = "note"; note.style.marginTop = "10px";
+    note.textContent = "Clean test scores in %, mean of three seeds: Top-1 accuracy (m-EuroSAT), micro-F1 (m-BigEarthNet), mIoU (segmentation). * trained from scratch.";
+    $("models-table").appendChild(note);
+  }
+
+  /* ---------- copy BibTeX ---------- */
+  $("copy-bib").addEventListener("click", async () => {
+    const btn = $("copy-bib"), txt = $("bibtex").textContent;
+    try { await navigator.clipboard.writeText(txt); btn.textContent = "Copied"; }
+    catch { const r = document.createRange(); r.selectNodeContents($("bibtex")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected, press Ctrl+C"; }
+    setTimeout(() => { btn.textContent = "Copy"; }, 2200);
+  });
+
+  function drawAll() { drawScale(); drawHeatmaps(); drawRanks(); drawChain(); drawExcessList(); drawRecovery(); drawRealism(); }
+  drawAll(); drawModels();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+  new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>

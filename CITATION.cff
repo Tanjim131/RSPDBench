@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use RSPDBench, please cite the paper."
+title: "RSPDBench"
+type: software
+authors:
+  - family-names: "Faruk"
+    given-names: "Tanjim Bin"
+  - family-names: "Reza"
+    given-names: "Khondaker Masfiq"
+  - family-names: "Pallickara"
+    given-names: "Shrideep"
+  - family-names: "Pallickara"
+    given-names: "Sangmi Lee"
+identifiers:
+  - type: other
+    value: "arXiv:2609.23427"
+preferred-citation:
+  type: conference-paper
+  title: "RSPDBench: Benchmarking Vision Foundation Models on Earth Observation Tasks Under Physically Grounded Remote-Sensing Product Degradations"
+  authors:
+    - family-names: "Faruk"
+      given-names: "Tanjim Bin"
+    - family-names: "Reza"
+      given-names: "Khondaker Masfiq"
+    - family-names: "Pallickara"
+      given-names: "Shrideep"
+    - family-names: "Pallickara"
+      given-names: "Sangmi Lee"
+  collection-title: "Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)"
+  year: 2027
