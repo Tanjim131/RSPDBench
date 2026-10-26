@@ -27,7 +27,6 @@ for i, line in enumerate(lines):
 d.text((64, 430), "Blur, calibration drift, band", font=small, fill=INK2)
 d.text((64, 460), "misregistration, noise, and the chains", font=small, fill=INK2)
 d.text((64, 490), "they form. 5 datasets, 9 models.", font=small, fill=INK2)
-d.text((64, 556), "arxiv.org/abs/2609.23427", font=small, fill=INK2)
 
 tiles = [("clean.jpg", "CLEAN"), ("p1_s3.jpg", "P1 RESOLUTION"), ("p3_s3.jpg", "P3 MISREGISTRATION"),
          ("p4_s3.jpg", "P4 NOISE"), ("c1_gain_down_s3.jpg", "C1 ACQUISITION"), ("c2_gain_down_s3.jpg", "C2 HARMONIZATION")]
