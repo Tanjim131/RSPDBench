@@ -731,7 +731,7 @@ footer .wrap { display: grid; gap: 8px; }
         <h2>Run the degradations on your own model</h2>
         <p>The operators work on any (bands, height, width) tensor in native product units. Apply them before your model's own normalization, keep the head trained on clean data, and report the drop from your clean score.</p>
       </div>
-      <pre class="code"><span class="c"># pip install git+https://github.com/Tanjim131/RSPDBench</span>
+      <pre class="code"><span class="c"># pip install rspdbench</span>
 <span class="k">import</span> rspdbench <span class="k">as</span> rb
 
 contract = rb.get_contract(<span class="s">"hls-burn-scars"</span>)

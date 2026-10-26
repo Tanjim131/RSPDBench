@@ -5,7 +5,7 @@ Tanjim Bin Faruk, Khondaker Masfiq Reza, Shrideep Pallickara, Sangmi Lee Pallick
 
 [Paper (arXiv:2609.23427)](https://arxiv.org/abs/2609.23427) · [Project page](https://tanjim131.github.io/RSPDBench/)
 
-![RSPDBench: one burn-scar scene under six product defects](docs/assets/og.png)
+![RSPDBench: one burn-scar scene under six product defects](https://raw.githubusercontent.com/Tanjim131/RSPDBench/main/docs/assets/og.png)
 
 Satellite images reach models as processed products, and products carry defects: resolution loss, calibration drift, bands that do not line up, sensor noise, and the residuals left when sensors are harmonized. RSPDBench applies these defects to the product itself, in its native units and before any model-specific preprocessing, one at a time and in physically ordered chains, and measures what each frozen Earth-observation foundation model loses relative to its own clean score.
 
@@ -23,9 +23,11 @@ Satellite images reach models as processed products, and products carry defects:
 ## Install
 
 ```bash
-pip install git+https://github.com/Tanjim131/RSPDBench          # operators only: numpy, torch
-pip install "rspdbench[examples] @ git+https://github.com/Tanjim131/RSPDBench"   # + data/plotting extras
+pip install rspdbench                 # operators only: numpy, torch
+pip install "rspdbench[examples]"     # + the data and plotting packages used by examples/ and analysis/
 ```
+
+The package contains the operators, conditions, band contracts and metrics. The results, examples and analysis scripts are in this repository.
 
 ## Quick start
 
@@ -75,6 +77,7 @@ The protocol: freeze the encoder, train a light head on clean data with hyperpar
 ## Reproduce the paper's numbers
 
 ```bash
+git clone https://github.com/Tanjim131/RSPDBench && cd RSPDBench
 pip install -e ".[examples]"
 bash analysis/reproduce_paper.sh        # Figs. 3-5 -> figures/, Tab. 2 -> stdout
 ```
