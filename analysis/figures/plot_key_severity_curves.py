@@ -155,7 +155,7 @@ def main() -> int:
             "id": "B",
             "dataset": "hls-burn-scars",
             "model": "dinov3_vit7b_web",
-            "title": "Replication: C1 tracks P1",
+            "title": "C1 follows P1",
             "lines": [("P1", "P1", None), ("P2 down", "P2", "down"), ("P4", "P4", None), ("C1 down", "C1", "down")],
             "note": "DINOv3-Web / HLS-Burn-Scar",
             "ylabel": "Relative drop (%)",

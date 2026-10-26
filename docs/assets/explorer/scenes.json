@@ -1,0 +1,623 @@
+[
+ {
+  "date": null,
+  "key": "m-eurosat",
+  "label": "m-EuroSAT",
+  "place": "Flevoland, Netherlands",
+  "source": "Sentinel-2, 13 bands resampled to 10 m",
+  "task": "land-cover classification",
+  "composite": {
+   "bands": [
+    "B12",
+    "B8A",
+    "B04"
+   ],
+   "text": "SWIR 2 (B12), narrow NIR (B8A) and red (B04) as R, G, B"
+  },
+  "sample": "id_23479",
+  "gsd_m": 10.0,
+  "lat": 52.5964,
+  "lon": 5.614,
+  "ext": "png",
+  "size": [
+   64,
+   64
+  ],
+  "extent_km": 0.64,
+  "conditions": [
+   "clean",
+   "p1_s1",
+   "p1_s2",
+   "p1_s3",
+   "p2_gain_down_s1",
+   "p2_gain_down_s2",
+   "p2_gain_down_s3",
+   "p2_gain_up_s1",
+   "p2_gain_up_s2",
+   "p2_gain_up_s3",
+   "p3_s1",
+   "p3_s2",
+   "p3_s3",
+   "p4_s1",
+   "p4_s2",
+   "p4_s3",
+   "c1_gain_down_s1",
+   "c1_gain_down_s2",
+   "c1_gain_down_s3",
+   "c1_gain_up_s1",
+   "c1_gain_up_s2",
+   "c1_gain_up_s3",
+   "c2_gain_down_s1",
+   "c2_gain_down_s2",
+   "c2_gain_down_s3",
+   "c2_gain_up_s1",
+   "c2_gain_up_s2",
+   "c2_gain_up_s3"
+  ],
+  "bands": [
+   {
+    "id": "B01",
+    "nm": 443
+   },
+   {
+    "id": "B02",
+    "nm": 490
+   },
+   {
+    "id": "B03",
+    "nm": 560
+   },
+   {
+    "id": "B04",
+    "nm": 665
+   },
+   {
+    "id": "B05",
+    "nm": 705
+   },
+   {
+    "id": "B06",
+    "nm": 740
+   },
+   {
+    "id": "B07",
+    "nm": 783
+   },
+   {
+    "id": "B08",
+    "nm": 842
+   },
+   {
+    "id": "B09",
+    "nm": 945
+   },
+   {
+    "id": "B10",
+    "nm": 1375
+   },
+   {
+    "id": "B11",
+    "nm": 1610
+   },
+   {
+    "id": "B12",
+    "nm": 2190
+   },
+   {
+    "id": "B8A",
+    "nm": 865
+   }
+  ],
+  "groups": {
+   "p3": [
+    "B05",
+    "B06",
+    "B07",
+    "B8A",
+    "B11",
+    "B12"
+   ],
+   "c2_geo": [
+    "B05",
+    "B06",
+    "B07",
+    "B8A",
+    "B11",
+    "B12"
+   ],
+   "c2_rad": [
+    "B08",
+    "B8A",
+    "B11",
+    "B12"
+   ]
+  },
+  "multispectral": true,
+  "band_mean": [
+   1359.94739,
+   1125.53308,
+   1054.995,
+   957.34442,
+   1219.66809,
+   2051.61914,
+   2433.60181,
+   2360.09595,
+   751.16406,
+   12.28812,
+   1848.90222,
+   1131.26941,
+   2665.43799
+  ]
+ },
+ {
+  "date": "2017-10-02",
+  "key": "m-bigearthnet",
+  "label": "m-BigEarthNet",
+  "place": "Algarve, Portugal",
+  "source": "Sentinel-2A Level-2A, 12 bands",
+  "task": "multi-label land-cover classification",
+  "composite": {
+   "bands": [
+    "B12",
+    "B8A",
+    "B04"
+   ],
+   "text": "SWIR 2 (B12), narrow NIR (B8A) and red (B04) as R, G, B"
+  },
+  "sample": "id_498218",
+  "gsd_m": 10.0,
+  "lat": 37.0564,
+  "lon": -8.0015,
+  "ext": "png",
+  "size": [
+   120,
+   120
+  ],
+  "extent_km": 1.2,
+  "conditions": [
+   "clean",
+   "p1_s1",
+   "p1_s2",
+   "p1_s3",
+   "p2_gain_down_s1",
+   "p2_gain_down_s2",
+   "p2_gain_down_s3",
+   "p2_gain_up_s1",
+   "p2_gain_up_s2",
+   "p2_gain_up_s3",
+   "p3_s1",
+   "p3_s2",
+   "p3_s3",
+   "p4_s1",
+   "p4_s2",
+   "p4_s3",
+   "c1_gain_down_s1",
+   "c1_gain_down_s2",
+   "c1_gain_down_s3",
+   "c1_gain_up_s1",
+   "c1_gain_up_s2",
+   "c1_gain_up_s3",
+   "c2_gain_down_s1",
+   "c2_gain_down_s2",
+   "c2_gain_down_s3",
+   "c2_gain_up_s1",
+   "c2_gain_up_s2",
+   "c2_gain_up_s3"
+  ],
+  "bands": [
+   {
+    "id": "B01",
+    "nm": 443
+   },
+   {
+    "id": "B02",
+    "nm": 490
+   },
+   {
+    "id": "B03",
+    "nm": 560
+   },
+   {
+    "id": "B04",
+    "nm": 665
+   },
+   {
+    "id": "B05",
+    "nm": 705
+   },
+   {
+    "id": "B06",
+    "nm": 740
+   },
+   {
+    "id": "B07",
+    "nm": 783
+   },
+   {
+    "id": "B08",
+    "nm": 842
+   },
+   {
+    "id": "B8A",
+    "nm": 865
+   },
+   {
+    "id": "B09",
+    "nm": 945
+   },
+   {
+    "id": "B11",
+    "nm": 1610
+   },
+   {
+    "id": "B12",
+    "nm": 2190
+   }
+  ],
+  "groups": {
+   "p3": [
+    "B05",
+    "B06",
+    "B07",
+    "B8A",
+    "B11",
+    "B12"
+   ],
+   "c2_geo": [
+    "B08",
+    "B8A",
+    "B11",
+    "B12"
+   ],
+   "c2_rad": [
+    "B08",
+    "B8A",
+    "B11",
+    "B12"
+   ]
+  },
+  "multispectral": true,
+  "band_mean": [
+   378.40244,
+   482.27408,
+   706.53748,
+   720.92609,
+   1100.67151,
+   1909.29248,
+   2191.69922,
+   2336.86353,
+   2394.74243,
+   2368.32007,
+   1875.25684,
+   1229.38416
+  ]
+ },
+ {
+  "date": null,
+  "key": "m-SA-crop-type",
+  "label": "m-SA-crop",
+  "place": "Western Cape, South Africa",
+  "source": "Sentinel-2, 12 bands",
+  "task": "crop-type segmentation",
+  "composite": {
+   "bands": [
+    "B12",
+    "B8A",
+    "B04"
+   ],
+   "text": "SWIR 2 (B12), narrow NIR (B8A) and red (B04) as R, G, B"
+  },
+  "sample": "ref_south_africa_crops_competition_v1_train_labels_0130_0",
+  "gsd_m": 10.0,
+  "lat": -33.5691,
+  "lon": 19.1934,
+  "ext": "jpg",
+  "size": [
+   256,
+   256
+  ],
+  "extent_km": 2.56,
+  "conditions": [
+   "clean",
+   "p1_s1",
+   "p1_s2",
+   "p1_s3",
+   "p2_gain_down_s1",
+   "p2_gain_down_s2",
+   "p2_gain_down_s3",
+   "p2_gain_up_s1",
+   "p2_gain_up_s2",
+   "p2_gain_up_s3",
+   "p3_s1",
+   "p3_s2",
+   "p3_s3",
+   "p4_s1",
+   "p4_s2",
+   "p4_s3",
+   "c1_gain_down_s1",
+   "c1_gain_down_s2",
+   "c1_gain_down_s3",
+   "c1_gain_up_s1",
+   "c1_gain_up_s2",
+   "c1_gain_up_s3",
+   "c2_gain_down_s1",
+   "c2_gain_down_s2",
+   "c2_gain_down_s3",
+   "c2_gain_up_s1",
+   "c2_gain_up_s2",
+   "c2_gain_up_s3"
+  ],
+  "bands": [
+   {
+    "id": "B01",
+    "nm": 443
+   },
+   {
+    "id": "B02",
+    "nm": 490
+   },
+   {
+    "id": "B03",
+    "nm": 560
+   },
+   {
+    "id": "B04",
+    "nm": 665
+   },
+   {
+    "id": "B05",
+    "nm": 705
+   },
+   {
+    "id": "B06",
+    "nm": 740
+   },
+   {
+    "id": "B07",
+    "nm": 783
+   },
+   {
+    "id": "B08",
+    "nm": 842
+   },
+   {
+    "id": "B8A",
+    "nm": 865
+   },
+   {
+    "id": "B09",
+    "nm": 945
+   },
+   {
+    "id": "B11",
+    "nm": 1610
+   },
+   {
+    "id": "B12",
+    "nm": 2190
+   }
+  ],
+  "groups": {
+   "p3": [
+    "B05",
+    "B06",
+    "B07",
+    "B8A",
+    "B11",
+    "B12"
+   ],
+   "c2_geo": [
+    "B08",
+    "B8A",
+    "B11",
+    "B12"
+   ],
+   "c2_rad": [
+    "B08",
+    "B8A",
+    "B11",
+    "B12"
+   ]
+  },
+  "multispectral": true,
+  "band_mean": [
+   12.67589,
+   16.49207,
+   26.62731,
+   36.86701,
+   46.55708,
+   58.30935,
+   63.54731,
+   68.09807,
+   69.04797,
+   69.79,
+   84.10689,
+   66.29906
+  ]
+ },
+ {
+  "date": null,
+  "key": "m-chesapeake",
+  "label": "m-Chesapeake",
+  "place": "Chesapeake Bay watershed, USA",
+  "source": "NAIP aerial imagery, red, green, blue and NIR",
+  "task": "land-cover segmentation",
+  "composite": {
+   "bands": [
+    "NIR",
+    "RED",
+    "GREEN"
+   ],
+   "text": "NIR, red and green as R, G, B (color infrared)"
+  },
+  "sample": "id_015008",
+  "gsd_m": 1.0,
+  "lat": null,
+  "lon": null,
+  "ext": "jpg",
+  "size": [
+   256,
+   256
+  ],
+  "extent_km": 0.26,
+  "conditions": [
+   "clean",
+   "p1_s1",
+   "p1_s2",
+   "p1_s3",
+   "p2_gain_down_s1",
+   "p2_gain_down_s2",
+   "p2_gain_down_s3",
+   "p2_gain_up_s1",
+   "p2_gain_up_s2",
+   "p2_gain_up_s3",
+   "p4_s1",
+   "p4_s2",
+   "p4_s3",
+   "c1_gain_down_s1",
+   "c1_gain_down_s2",
+   "c1_gain_down_s3",
+   "c1_gain_up_s1",
+   "c1_gain_up_s2",
+   "c1_gain_up_s3"
+  ],
+  "bands": [
+   {
+    "id": "RED",
+    "nm": 665
+   },
+   {
+    "id": "GREEN",
+    "nm": 560
+   },
+   {
+    "id": "BLUE",
+    "nm": 490
+   },
+   {
+    "id": "NIR",
+    "nm": 842
+   }
+  ],
+  "groups": {
+   "p3": [],
+   "c2_geo": [],
+   "c2_rad": []
+  },
+  "multispectral": false,
+  "band_mean": [
+   0.4608,
+   0.52571,
+   0.48511,
+   0.57676
+  ]
+ },
+ {
+  "key": "hls-burn-scars",
+  "label": "HLS Burn Scar",
+  "place": "San Diego County, California, USA",
+  "source": "Harmonized Landsat Sentinel-2 (HLS S30), 6 bands",
+  "task": "burn-scar segmentation",
+  "composite": {
+   "bands": [
+    "SWIR_2",
+    "NIR_NARROW",
+    "RED"
+   ],
+   "text": "SWIR 2, NIR and red as R, G, B"
+  },
+  "sample": "tile T11SNS",
+  "gsd_m": 30.0,
+  "lat": 32.737,
+  "lon": -116.6883,
+  "date": "2020-10-02",
+  "ext": "jpg",
+  "size": [
+   512,
+   512
+  ],
+  "extent_km": 15.36,
+  "conditions": [
+   "clean",
+   "p1_s1",
+   "p1_s2",
+   "p1_s3",
+   "p2_gain_down_s1",
+   "p2_gain_down_s2",
+   "p2_gain_down_s3",
+   "p2_gain_up_s1",
+   "p2_gain_up_s2",
+   "p2_gain_up_s3",
+   "p3_s1",
+   "p3_s2",
+   "p3_s3",
+   "p4_s1",
+   "p4_s2",
+   "p4_s3",
+   "c1_gain_down_s1",
+   "c1_gain_down_s2",
+   "c1_gain_down_s3",
+   "c1_gain_up_s1",
+   "c1_gain_up_s2",
+   "c1_gain_up_s3",
+   "c2_gain_down_s1",
+   "c2_gain_down_s2",
+   "c2_gain_down_s3",
+   "c2_gain_up_s1",
+   "c2_gain_up_s2",
+   "c2_gain_up_s3"
+  ],
+  "bands": [
+   {
+    "id": "BLUE",
+    "nm": 490
+   },
+   {
+    "id": "GREEN",
+    "nm": 560
+   },
+   {
+    "id": "RED",
+    "nm": 665
+   },
+   {
+    "id": "NIR_NARROW",
+    "nm": 865
+   },
+   {
+    "id": "SWIR_1",
+    "nm": 1610
+   },
+   {
+    "id": "SWIR_2",
+    "nm": 2190
+   }
+  ],
+  "groups": {
+   "p3": [
+    "NIR_NARROW",
+    "SWIR_1",
+    "SWIR_2"
+   ],
+   "c2_geo": [
+    "NIR_NARROW",
+    "SWIR_1",
+    "SWIR_2"
+   ],
+   "c2_rad": [
+    "NIR_NARROW",
+    "SWIR_1",
+    "SWIR_2"
+   ]
+  },
+  "multispectral": true,
+  "band_mean": [
+   0.05189,
+   0.07617,
+   0.09353,
+   0.20407,
+   0.23159,
+   0.17121
+  ]
+ }
+]

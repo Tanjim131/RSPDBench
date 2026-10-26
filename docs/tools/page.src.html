@@ -3,8 +3,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..650;1,8..60,400&display=swap">
+<script>
+  // Math is typeset by MathJax (SVG output, no web fonts needed); text stays readable if it fails to load.
+  window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]] }, svg: { fontCache: "global" }, options: { enableMenu: false } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
 <style>
-/* Layout: one 1140px reading column under a dark "night pass" hero; findings as stacked figure bands. */
+/* Layout: a dark hero holds the paper header and the scene explorer; findings follow as stacked figure bands. */
 :root {
   --bg: #f3f5f8;
   --surface: #ffffff;
@@ -16,10 +21,12 @@
   --accent-soft: #fbe6ee;
   --focus: #2a78d6;
   --hero-bg: #070b13;
+  --hero-panel: #0d1422;
   --hero-ink: #eef2f8;
   --hero-ink-2: #a7b1c4;
-  --hero-rule: #1f2a3d;
+  --hero-rule: #222e43;
   --hero-accent: #ff6b9a;
+  --hero-ok: #8fdcb0;
   --grid: #e7eaf0;
   --axis: #c3c9d4;
   --deemph: #b9c0cc;
@@ -27,9 +34,11 @@
   --s2: #eb6834;
   --s3: #1baf7a;
   --s4: #eda100;
-  --div-mid: #f0efec;
-  --div-pos: #b3172c;
-  --div-neg: #1c5cab;
+  --na: #c4c7cc;
+  --na-ink: #3d4048;
+  --cell-max: #111111;
+  --frozen: #159bd3;
+  --scratch: #d55e00;
   --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -42,7 +51,7 @@
     --accent: #ff6b9a; --accent-soft: #3a1626; --focus: #6da7ec;
     --grid: #1d2738; --axis: #34425a; --deemph: #4a5770;
     --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
-    --div-mid: #283246; --div-pos: #ff7d7d; --div-neg: #7fb0ff;
+    --na: #364156; --na-ink: #a3adbf; --cell-max: #0a0a0a; --frozen: #3fb2e6; --scratch: #f07a2b;
     color-scheme: dark;
   }
 }
@@ -51,7 +60,7 @@
   --accent: #ff6b9a; --accent-soft: #3a1626; --focus: #6da7ec;
   --grid: #1d2738; --axis: #34425a; --deemph: #4a5770;
   --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
-  --div-mid: #283246; --div-pos: #ff7d7d; --div-neg: #7fb0ff;
+  --na: #364156; --na-ink: #a3adbf; --cell-max: #0a0a0a; --frozen: #3fb2e6; --scratch: #f07a2b;
   color-scheme: dark;
 }
 
@@ -74,78 +83,145 @@ p { margin: 0; max-width: 66ch; }
 .eyebrow { font: 500 0.74rem/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
 .mono { font-family: var(--font-mono); font-size: 0.86em; }
 
-/* ---------- hero ---------- */
+/* ---------- hero: paper header ---------- */
 .hero { background: var(--hero-bg); color: var(--hero-ink); }
-.hero .wrap { padding-block: 28px 44px; display: grid; gap: 28px; }
+.hero .wrap { padding-block: 22px 52px; display: grid; gap: 34px; }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; font: 500 0.82rem/1 var(--font-mono); color: var(--hero-ink-2); letter-spacing: 0.06em; text-transform: uppercase; }
 .topbar nav { display: flex; gap: 18px; flex-wrap: wrap; }
 .topbar a { color: var(--hero-ink-2); text-decoration: none; }
 .topbar a:hover { color: var(--hero-ink); }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
-.hero-copy { display: grid; gap: 20px; align-content: start; padding-top: 8px; }
-.venue { font: 500 0.78rem/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--hero-accent); }
-.hero h1 { font-size: clamp(2.6rem, 5.4vw, 4.5rem); max-width: 100%; font-weight: 820; font-stretch: 125%; font-variation-settings: "wdth" 125; letter-spacing: -0.035em; line-height: 0.92; }
-.hero .lede { font-size: clamp(1.1rem, 1.6vw, 1.28rem); line-height: 1.5; color: var(--hero-ink); max-width: 34ch; }
-.hero .title-full { font: 500 0.95rem/1.45 var(--font-display); color: var(--hero-ink-2); max-width: 52ch; }
-.authors { font: 500 0.98rem/1.6 var(--font-display); color: var(--hero-ink); }
+.paper-head { display: grid; justify-items: center; text-align: center; gap: 18px; padding-top: 10px; }
+.venue { font: 600 0.76rem/1 var(--font-mono); letter-spacing: 0.09em; text-transform: uppercase; color: var(--hero-accent); border: 1px solid rgba(255, 107, 154, 0.45); border-radius: 999px; padding: 8px 14px; }
+.paper-title { display: grid; gap: 12px; justify-items: center; }
+.paper-title .t1 { font-size: clamp(2.6rem, 6.4vw, 4.8rem); font-weight: 820; font-stretch: 125%; font-variation-settings: "wdth" 125; letter-spacing: -0.035em; line-height: 0.95; }
+.paper-title .t2 { font-size: clamp(1.18rem, 2.3vw, 1.72rem); font-weight: 600; line-height: 1.28; letter-spacing: -0.01em; max-width: 44ch; text-wrap: balance; }
+.authors { max-width: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 26px; font: 600 1.06rem/1.5 var(--font-display); color: var(--hero-ink); }
 .authors span { white-space: nowrap; }
-.authors .aff { display: block; font-weight: 400; color: var(--hero-ink-2); font-size: 0.9rem; }
-.buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; font: 600 0.92rem/1 var(--font-display); text-decoration: none; border: 1px solid var(--hero-rule); color: var(--hero-ink); background: transparent; cursor: pointer; }
+.aff { max-width: none; margin-top: -10px; font: 400 0.95rem/1.4 var(--font-display); color: var(--hero-ink-2); }
+.buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 999px; font: 600 0.92rem/1 var(--font-display); text-decoration: none; border: 1px solid var(--hero-rule); color: var(--hero-ink); background: transparent; cursor: pointer; }
 .btn:hover { border-color: var(--hero-ink-2); }
 .btn.primary { background: var(--hero-accent); border-color: var(--hero-accent); color: #170710; }
 .btn svg { width: 16px; height: 16px; }
+.tldr { max-width: 62ch; text-align: center; font: 400 clamp(1.02rem, 1.4vw, 1.14rem)/1.55 var(--font-body); color: var(--hero-ink-2); }
 
-/* explorer */
-.explorer { display: grid; gap: 12px; }
-.viewer { position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 100%; border-radius: 6px; overflow: hidden; background: #000; touch-action: pan-y; user-select: none; }
+/* ---------- hero: explorer ---------- */
+.ex { border-top: 1px solid var(--hero-rule); padding-top: 34px; display: grid; gap: 22px; }
+.ex-head { display: grid; gap: 8px; }
+.ex-head h2 { color: var(--hero-ink); }
+.ex-head p { color: var(--hero-ink-2); font-size: 1rem; }
+.ex-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); grid-template-areas: "fig pick" "fig ctrl"; gap: 22px 30px; align-items: start; }
+.ex-pick { grid-area: pick; display: grid; gap: 10px; }
+.scene { grid-area: fig; background: var(--hero-panel); border: 1px solid var(--hero-rule); border-radius: 12px; overflow: hidden; min-width: 0; }
+.ex-ctrl { grid-area: ctrl; display: grid; gap: 18px; min-width: 0; }
+.step { font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--hero-ink-2); display: flex; align-items: center; gap: 8px; }
+.step b { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--hero-rule); color: var(--hero-ink); font-weight: 600; font-size: 0.68rem; letter-spacing: 0; }
+
+.ds-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.ds-btn { display: grid; gap: 5px; align-content: start; padding: 5px 5px 7px; border-radius: 8px; border: 1px solid var(--hero-rule); background: transparent; color: var(--hero-ink-2); cursor: pointer; text-align: left; font: inherit; min-width: 0; }
+.ds-btn img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; background: #000; }
+.ds-btn img.px { image-rendering: pixelated; }
+.ds-btn .n { font: 650 0.74rem/1.2 var(--font-display); letter-spacing: -0.01em; color: var(--hero-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-btn .s { font: 400 0.66rem/1.3 var(--font-mono); color: var(--hero-ink-2); }
+.ds-btn .s span { display: block; }
+.ds-btn:hover { border-color: var(--hero-ink-2); }
+.ds-btn[aria-pressed="true"] { border-color: var(--hero-accent); box-shadow: inset 0 0 0 1px var(--hero-accent); background: rgba(255, 107, 154, 0.08); }
+
+.scene-head { padding: 14px 16px 13px; display: grid; gap: 10px; border-bottom: 1px solid var(--hero-rule); }
+.scene-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.scene-name { font: 700 1.08rem/1.25 var(--font-display); color: var(--hero-ink); }
+.scene-name small { display: block; font: 500 0.76rem/1.3 var(--font-mono); color: var(--hero-ink-2); margin-top: 2px; }
+.mag-btn { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--hero-rule); background: transparent; color: var(--hero-ink); font: 600 0.8rem/1 var(--font-display); cursor: pointer; }
+.mag-btn svg { width: 15px; height: 15px; }
+.mag-btn:hover { border-color: var(--hero-ink-2); }
+.mag-btn[aria-pressed="true"] { background: var(--hero-ink); border-color: var(--hero-ink); color: var(--hero-bg); }
+.meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 14px; margin: 0; }
+.meta dt { font: 500 0.66rem/1.95 var(--font-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--hero-ink-2); }
+.meta dd { margin: 0; font: 400 0.88rem/1.45 var(--font-display); color: var(--hero-ink); min-width: 0; }
+.meta dd a { color: var(--hero-ink); text-decoration-color: rgba(238, 242, 248, 0.4); }
+.meta dd .dim { color: var(--hero-ink-2); }
+.provenance { display: flex; align-items: center; gap: 8px; font: 500 0.78rem/1.35 var(--font-mono); color: var(--hero-ok); }
+.provenance svg { width: 15px; height: 15px; flex: none; }
+.provenance a { color: var(--hero-ok); }
+
+.viewer { position: relative; aspect-ratio: 1 / 1; width: 100%; background: #000; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .viewer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.viewer.px img { image-rendering: pixelated; }
 .viewer .after { clip-path: inset(0 0 0 var(--split, 50%)); }
 .viewer .divider { position: absolute; top: 0; bottom: 0; left: var(--split, 50%); width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.35); pointer-events: none; }
 .viewer .knob { position: absolute; top: 50%; left: var(--split, 50%); width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.45); display: grid; place-items: center; pointer-events: none; }
 .viewer .knob svg { width: 20px; height: 20px; color: #111; }
-.viewer .tag { position: absolute; top: 10px; padding: 4px 8px; border-radius: 4px; background: rgba(7,11,19,.72); color: #eef2f8; font: 500 0.72rem/1.2 var(--font-mono); letter-spacing: 0.05em; pointer-events: none; }
+.viewer .tag { position: absolute; top: 10px; padding: 4px 8px; border-radius: 4px; background: rgba(7,11,19,.78); color: #eef2f8; font: 500 0.72rem/1.2 var(--font-mono); letter-spacing: 0.05em; pointer-events: none; transition: opacity .12s ease; }
 .viewer .tag.left { left: 10px; } .viewer .tag.right { right: 10px; }
+.viewer .tag.off { opacity: 0; }
 .viewer input[type=range] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
-.loupe { position: absolute; width: 150px; height: 150px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 6px 22px rgba(0,0,0,.55); pointer-events: none; background-repeat: no-repeat; image-rendering: pixelated; }
-.controls { display: grid; gap: 10px; }
-.control-row { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
-.control-row .label { font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--hero-ink-2); min-width: 66px; }
+.viewer.magnify input[type=range] { cursor: zoom-in; }
+.lens { position: absolute; width: 176px; height: 176px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 6px 22px rgba(0,0,0,.55); pointer-events: none; overflow: hidden; background: #000; }
+.lens > div { position: absolute; inset: 0; background-repeat: no-repeat; image-rendering: pixelated; }
+.lens .lens-line { left: 88px; right: auto; width: 2px; margin-left: -1px; background: #fff; }
+.viewer-note { padding: 10px 16px 12px; font: 400 0.8rem/1.4 var(--font-display); color: var(--hero-ink-2); border-top: 1px solid var(--hero-rule); }
+
 .seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.seg.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
-.seg label { padding: 7px 11px; border-radius: 6px; border: 1px solid var(--hero-rule); font: 500 0.84rem/1 var(--font-display); color: var(--hero-ink-2); cursor: pointer; }
+.seg label { padding: 8px 11px; border-radius: 7px; border: 1px solid var(--hero-rule); font: 500 0.84rem/1.15 var(--font-display); color: var(--hero-ink-2); cursor: pointer; }
+.seg.grid3 label { display: flex; align-items: baseline; gap: 7px; }
 .seg input:checked + label { background: var(--hero-ink); border-color: var(--hero-ink); color: var(--hero-bg); }
 .seg input:focus-visible + label { outline: 2px solid var(--hero-accent); outline-offset: 2px; }
-.seg input:disabled + label { opacity: 0.35; cursor: not-allowed; }
-.seg label b { font-family: var(--font-mono); font-weight: 600; margin-right: 6px; font-size: 0.78rem; }
-.bands { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
-.band { padding: 7px 4px 6px; border-radius: 4px; border: 1px solid var(--hero-rule); text-align: center; font: 500 0.7rem/1.25 var(--font-mono); color: var(--hero-ink-2); }
-.band b { display: block; font-size: 0.74rem; color: var(--hero-ink); font-weight: 600; }
-.band.hit { border-color: var(--hero-accent); background: rgba(255,107,154,.14); }
-.band .role { display: block; margin-top: 3px; font-size: 0.64rem; letter-spacing: 0.02em; color: var(--hero-ink-2); min-height: 1.2em; }
-.band.hit .role { color: var(--hero-accent); }
-.caption { font: 400 0.92rem/1.5 var(--font-display); color: var(--hero-ink); min-height: 2.9em; }
-.caption .mono { color: var(--hero-ink-2); }
-.credit { font: 400 0.72rem/1.4 var(--font-mono); color: var(--hero-ink-2); }
+.seg input:disabled + label { opacity: 0.32; cursor: not-allowed; text-decoration: line-through; }
+.seg label b { font-family: var(--font-mono); font-weight: 600; font-size: 0.76rem; margin-right: 6px; }
+.seg.grid3 label b { margin-right: 0; }
+.ctl-row { display: flex; flex-wrap: wrap; gap: 14px 22px; }
+.ctl-row > div { display: grid; gap: 8px; }
+.na-note { font: 400 0.8rem/1.4 var(--font-display); color: var(--hero-ink-2); }
+
+.panel { background: var(--hero-panel); border: 1px solid var(--hero-rule); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
+.panel-h { font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--hero-ink-2); }
+.info { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px 14px; margin: 0; }
+.info dt { font: 500 0.66rem/1.95 var(--font-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--hero-ink-2); }
+.info dd { margin: 0; font: 400 0.9rem/1.5 var(--font-display); color: var(--hero-ink); min-width: 0; }
+.info dd b { font-weight: 650; }
+.info dd .fam { font: 600 0.8rem/1 var(--font-mono); color: var(--hero-accent); margin-right: 6px; }
+.info dd.formula { font-size: 1.02rem; overflow-x: auto; }
+.bandmap svg { width: 100%; height: auto; display: block; }
+.bandmap svg text { font-family: var(--font-display); }
+.bm-k { fill: var(--hero-ink-2); font: 500 9px var(--font-mono); letter-spacing: 0.04em; }
+.bm-b { fill: var(--hero-ink); font-size: 10.5px; font-weight: 600; }
+.bm-nm { fill: var(--hero-ink-2); font: 400 8.5px var(--font-mono); }
+.bm-rgb { font-size: 10.5px; font-weight: 750; }
+.bm-row { fill: var(--hero-ink); font-size: 11px; }
+.bm-on { fill: var(--hero-accent); }
+.bm-off { fill: #3b4860; }
+.bm-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font: 400 0.78rem/1.4 var(--font-display); color: var(--hero-ink-2); }
+.bm-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.bm-legend i { display: inline-block; width: 14px; height: 9px; border-radius: 2px; background: var(--hero-accent); }
+.bm-legend i.off { width: 5px; height: 5px; border-radius: 50%; background: #3b4860; }
+.bm-note { font: 400 0.8rem/1.45 var(--font-display); color: var(--hero-ink); }
 
 /* ---------- sections ---------- */
 section.band-sec { padding-block: 56px; border-bottom: 1px solid var(--rule); }
 .sec-head { display: grid; gap: 10px; margin-bottom: 26px; }
 .sec-head p { color: var(--ink-2); }
-.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 18px; }
 
 .problem { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
 .problem .big { font: 600 clamp(1.3rem, 2.3vw, 1.7rem)/1.3 var(--font-display); letter-spacing: -0.01em; max-width: 24ch; text-wrap: balance; }
 .problem .body { display: grid; gap: 14px; color: var(--ink-2); }
 
 .defects { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 16px; }
-.defect { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; cursor: pointer; text-align: left; color: inherit; font: inherit; }
+.defect { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; text-decoration: none; color: inherit; }
 .defect:hover { border-color: var(--ink-3); }
 .defect img { width: 96px; height: 96px; border-radius: 4px; object-fit: cover; }
 .defect .id { font: 600 0.74rem/1 var(--font-mono); color: var(--accent); letter-spacing: 0.04em; }
 .defect h3 { margin: 4px 0 6px; }
-.defect p { font-size: 0.93rem; line-height: 1.45; color: var(--ink-2); }
-.defect .anchor { margin-top: 8px; font: 500 0.74rem/1.45 var(--font-mono); color: var(--ink); }
+.defect p { font: 400 0.92rem/1.45 var(--font-display); color: var(--ink-2); }
+.defect dl { margin: 10px 0 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 10px; font: 400 0.86rem/1.45 var(--font-display); }
+.defect dt { font: 500 0.64rem/2 var(--font-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); }
+.defect dd { margin: 0; color: var(--ink); }
+.defect .go { margin-top: 8px; font: 600 0.8rem/1 var(--font-display); color: var(--accent); }
+.sev-table td, .sev-table th { text-align: center; }
+.sev-table td:first-child, .sev-table th:first-child { text-align: left; }
+.sev-table td { white-space: normal; }
+.sev-note { max-width: none; }
 
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
 .tile { padding: 18px 18px 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; display: grid; gap: 8px; align-content: start; }
@@ -154,6 +230,7 @@ section.band-sec { padding-block: 56px; border-bottom: 1px solid var(--rule); }
 .tile p { font: 400 0.92rem/1.45 var(--font-display); color: var(--ink-2); }
 
 .figure { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.figure.bleed { width: min(1320px, calc(100vw - 32px)); margin-left: calc(50% - min(660px, 50vw - 16px)); }
 .fig-controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
 .pills { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .pills input { position: absolute; opacity: 0; pointer-events: none; }
@@ -182,16 +259,28 @@ svg text { font-family: var(--font-display); }
 #ch-svg { max-width: 640px; min-width: 440px; }
 #realism-svg { max-width: 560px; min-width: 380px; }
 
-.heatmaps { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 16px 14px; }
-.hm h3 { font-size: 0.95rem; margin-bottom: 2px; }
-.hm .sub { font: 400 0.76rem/1.3 var(--font-mono); color: var(--ink-3); margin-bottom: 6px; }
-.hm svg { width: 100%; height: auto; overflow: visible; }
-.hm rect.cell { stroke: var(--surface); stroke-width: 2; }
-.hm rect.cell.na { fill: var(--grid); }
-.hm rect.cell:hover, .hm rect.cell:focus { stroke: var(--ink); stroke-width: 2; outline: none; }
-.hm rect.max { stroke: var(--ink); stroke-width: 2; }
-.scale { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font: 500 0.78rem/1 var(--font-mono); color: var(--ink-3); }
-.scale canvas { width: 260px; max-width: 60vw; height: 12px; border-radius: 2px; }
+/* fingerprint heatmap, drawn like the paper's Fig. 3 */
+#fp-svg { min-width: 860px; }
+#fp-svg .fp-title { fill: var(--ink); font-size: 14px; font-weight: 700; }
+#fp-svg .fp-group { fill: var(--ink); font-size: 11.5px; font-weight: 650; }
+#fp-svg .fp-fam { fill: var(--ink); font-size: 12.5px; font-weight: 700; }
+#fp-svg .fp-model { fill: var(--ink); font-size: 12.5px; font-weight: 650; }
+#fp-svg .fp-val { font-size: 11.5px; font-weight: 500; pointer-events: none; font-variant-numeric: tabular-nums; }
+#fp-svg .fp-na { fill: var(--na-ink); font-size: 12px; font-weight: 700; pointer-events: none; }
+#fp-svg rect.cell { outline: none; }
+#fp-svg rect.cell:hover, #fp-svg rect.cell:focus { stroke: var(--focus); stroke-width: 2.5; }
+.fp-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px; font: 500 0.82rem/1.25 var(--font-display); color: var(--ink-2); }
+.fp-legend > span { display: inline-flex; align-items: center; gap: 8px; }
+.fp-legend .bar { display: inline-grid; gap: 3px; }
+.fp-legend .bar i { display: block; width: 190px; height: 11px; border-radius: 2px; background: linear-gradient(90deg, #fff5e6, #feecd1, #fee0b8, #fdd49f, #fdc68f, #fdb27b, #fc9662, #f67c52, #ef6447, #df432d, #ce2417); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+.fp-legend .bar small { display: flex; justify-content: space-between; font: 400 0.7rem/1 var(--font-mono); color: var(--ink-3); }
+.fp-legend .sw { width: 16px; height: 14px; border-radius: 2px; display: inline-grid; place-items: center; font: 700 10px/1 var(--font-display); }
+.fp-legend .sw.neg { background: #b5e1ae; }
+.fp-legend .sw.na { background: var(--na); color: var(--na-ink); }
+.fp-legend .sw.max { background: #fdd49f; box-shadow: inset 0 0 0 2px var(--cell-max); }
+.fp-legend svg { width: 13px; height: 13px; }
+.scroll-hint { display: none; font: 400 0.78rem/1.3 var(--font-display); color: var(--ink-3); }
+@media (max-width: 900px) { .scroll-hint { display: block; } }
 
 details.table-view summary { cursor: pointer; font: 500 0.84rem/1.4 var(--font-display); color: var(--ink-2); }
 .tbl-wrap { overflow-x: auto; margin-top: 10px; }
@@ -228,18 +317,23 @@ footer .wrap { display: grid; gap: 8px; }
 .tooltip .tk { display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
 .tooltip .tk i { width: 12px; height: 2px; border-radius: 2px; display: inline-block; }
 
-@media (max-width: 900px) {
-  .hero-grid, .problem, .two { grid-template-columns: minmax(0, 1fr); }
-  .hero .lede { max-width: none; }
+@media (max-width: 960px) {
+  .ex-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pick" "fig" "ctrl"; }
 }
-@media (max-width: 520px) {
-  .bands { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) {
+  .problem, .two { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .ds-list { grid-template-columns: repeat(5, 96px); overflow-x: auto; padding-bottom: 4px; }
+  .seg.grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .info { grid-template-columns: minmax(0, 1fr); gap: 2px 0; }
+  .info dd { margin-bottom: 6px; }
   .defect { grid-template-columns: 72px minmax(0, 1fr); }
   .defect img { width: 72px; height: 72px; }
+  .lens { width: 132px; height: 132px; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .viewer .after, .viewer .divider, .viewer .knob { transition: none; }
-  .btn, .seg label, .pills label, .defect { transition: border-color .15s ease, background-color .15s ease, color .15s ease; }
+  .btn, .seg label, .pills label, .defect, .ds-btn, .mag-btn { transition: border-color .15s ease, background-color .15s ease, color .15s ease; }
 }
 </style>
 
@@ -248,57 +342,114 @@ footer .wrap { display: grid; gap: 8px; }
     <div class="topbar">
       <span>RSPDBench</span>
       <nav aria-label="Page sections">
+        <a href="#explorer">Explorer</a>
         <a href="#defects">Defects</a>
         <a href="#findings">Findings</a>
         <a href="#code">Code</a>
         <a href="#citation">Cite</a>
       </nav>
     </div>
-    <div class="hero-grid">
-      <div class="hero-copy">
-        <div class="venue">WACV 2027 · Evaluations and Datasets</div>
-        <h1>RSPDBench</h1>
-        <p class="lede">A wildfire map is only as good as the satellite product it reads. RSPDBench degrades that product the way real sensors and processing chains do, and measures what each Earth-observation foundation model loses.</p>
-        <p class="title-full">Benchmarking Vision Foundation Models on Earth Observation Tasks Under Physically Grounded Remote-Sensing Product Degradations</p>
-        <p class="authors">
-          <span>Tanjim Bin Faruk</span>, <span>Khondaker Masfiq Reza</span>, <span>Shrideep Pallickara</span>, <span>Sangmi Lee Pallickara</span>
-          <span class="aff">Colorado State University</span>
-        </p>
-        <div class="buttons">
-          <a class="btn primary" href="https://arxiv.org/abs/2609.23427" target="_blank" rel="noopener">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></svg>Paper</a>
-          <a class="btn" href="https://github.com/TODO/RSPDBench" data-repo target="_blank" rel="noopener">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.6 7.6 0 0 1 8 3.87c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
-          <a class="btn" href="#citation">BibTeX</a>
-        </div>
-      </div>
 
-      <div class="explorer" aria-label="Defect explorer">
-        <div class="viewer" id="viewer" style="--split: 50%">
-          <img id="img-before" alt="Clean HLS false-color product of a burn scar" src="assets/explorer/clean.jpg" width="512" height="512">
-          <img id="img-after" class="after" alt="" src="assets/explorer/p3_s3.jpg" width="512" height="512">
-          <div class="divider"></div>
-          <div class="knob"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 5 2 10l5 5M13 5l5 5-5 5"/></svg></div>
-          <span class="tag left">CLEAN</span>
-          <span class="tag right" id="tag-after">P3 · S3</span>
-          <div class="loupe" id="loupe" hidden></div>
-          <input type="range" id="split" min="0" max="100" value="50" aria-label="Move the comparison divider">
+    <div class="paper-head">
+      <span class="venue">WACV 2027</span>
+      <h1 class="paper-title">
+        <span class="t1">RSPDBench:</span>
+        <span class="t2">Benchmarking Vision Foundation Models on Earth Observation Tasks Under Physically Grounded Remote-Sensing Product Degradations</span>
+      </h1>
+      <p class="authors" aria-label="Authors">
+        <span>Tanjim Bin Faruk</span><span>Khondaker Masfiq Reza</span><span>Shrideep Pallickara</span><span>Sangmi Lee Pallickara</span>
+      </p>
+      <p class="aff">Colorado State University</p>
+      <div class="buttons">
+        <a class="btn primary" href="https://arxiv.org/abs/2609.23427" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></svg>Paper (arXiv)</a>
+        <a class="btn" href="https://github.com/TODO/RSPDBench" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
+        <a class="btn" href="#citation">BibTeX</a>
+      </div>
+      <p class="tldr">A wildfire map is only as good as the satellite product it reads. RSPDBench degrades that product the way real sensors and processing chains do, and measures what each Earth-observation foundation model loses.</p>
+    </div>
+
+    <div class="ex" id="explorer" aria-label="Defect explorer">
+      <div class="ex-head">
+        <h2>See a defect on a real product</h2>
+        <p>Pick a dataset, a defect and a severity, then drag the divider across the image. Every image here was produced by the released rspdbench code, the same operators the benchmark runs.</p>
+      </div>
+      <div class="ex-grid">
+        <div class="ex-pick">
+          <div class="step"><b>1</b>Dataset</div>
+          <div class="ds-list" id="ds-list" role="group" aria-label="Dataset"></div>
         </div>
-        <div class="controls">
-          <div class="control-row">
-            <span class="label">Defect</span>
-            <div class="seg" role="radiogroup" aria-label="Defect" id="ex-family"></div>
+
+        <figure class="scene" style="margin:0">
+          <figcaption class="scene-head">
+            <div class="scene-top">
+              <div class="scene-name" id="scene-name"></div>
+              <button class="mag-btn" id="mag-btn" type="button" aria-pressed="false" title="Show a 3× magnified view under the pointer">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.8"/><path d="m10.4 10.4 4.1 4.1M6.8 4.8v4M4.8 6.8h4"/></svg>
+                <span id="mag-label">Magnifier</span>
+              </button>
+            </div>
+            <dl class="meta">
+              <dt>Location</dt><dd id="scene-loc"></dd>
+              <dt>Acquired</dt><dd id="scene-date"></dd>
+              <dt>Resolution</dt><dd id="scene-res"></dd>
+              <dt>False color</dt><dd id="scene-color"></dd>
+            </dl>
+            <div class="provenance">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5.5 4.5-4 3.5 4 3.5M10.5 4.5l4 3.5-4 3.5"/></svg>
+              <span>Degraded with the released <a href="https://github.com/TODO/RSPDBench/blob/main/rspdbench/operators.py" target="_blank" rel="noopener">rspdbench</a> code</span>
+            </div>
+          </figcaption>
+          <div class="viewer" id="viewer" style="--split: 50%">
+            <img id="img-before" alt="" width="512" height="512">
+            <img id="img-after" class="after" alt="" width="512" height="512">
+            <div class="divider"></div>
+            <div class="knob"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 5 2 10l5 5M13 5l5 5-5 5"/></svg></div>
+            <span class="tag left" id="tag-before">CLEAN</span>
+            <span class="tag right" id="tag-after"></span>
+            <div class="lens" id="lens" hidden><div id="lens-a"></div><div id="lens-b"></div><div class="lens-line" id="lens-line"></div></div>
+            <input type="range" id="split" min="0" max="100" value="50" aria-label="Divider position: left of it is the clean product, right of it the degraded product">
           </div>
-          <div class="control-row">
-            <span class="label">Severity</span>
-            <div class="seg" role="radiogroup" aria-label="Severity" id="ex-sev"></div>
-            <span class="label" style="min-width:auto">Gain</span>
-            <div class="seg" role="radiogroup" aria-label="Gain direction" id="ex-dir"></div>
-            <div class="seg"><input type="checkbox" id="ex-loupe"><label for="ex-loupe">Loupe 3×</label></div>
+          <p class="viewer-note" id="viewer-note">Left of the divider: the clean product. Right: the same product after the selected defect.</p>
+        </figure>
+
+        <div class="ex-ctrl">
+          <div style="display:grid;gap:8px">
+            <div class="step"><b>2</b>Defect</div>
+            <div class="seg grid3" role="radiogroup" aria-label="Defect" id="ex-family"></div>
+            <p class="na-note" id="ex-na" hidden></p>
           </div>
-          <div class="bands" id="ex-bands" aria-label="Bands affected by the selected defect"></div>
-          <p class="caption" id="ex-caption" aria-live="polite"></p>
-          <p class="credit">HLS Burn Scars tile T11SNS, day 276 of 2020 · false color: SWIR2, NIR, red as R, G, B · 30 m pixels · degraded with the released rspdbench code</p>
+          <div class="ctl-row">
+            <div>
+              <div class="step"><b>3</b>Severity</div>
+              <div class="seg" role="radiogroup" aria-label="Severity" id="ex-sev"></div>
+            </div>
+            <div id="dir-row">
+              <div class="step">Gain direction</div>
+              <div class="seg" role="radiogroup" aria-label="Gain direction" id="ex-dir"></div>
+            </div>
+          </div>
+
+          <div class="panel" aria-live="polite">
+            <div class="panel-h">What you are seeing</div>
+            <dl class="info" id="ex-info">
+              <dt>Dataset</dt><dd id="info-ds"></dd>
+              <dt>Defect</dt><dd id="info-defect"></dd>
+              <dt>Severity</dt><dd id="info-sev"></dd>
+              <dt>Setting</dt><dd id="info-setting"></dd>
+              <dt>Operator</dt><dd class="formula" id="info-formula"></dd>
+              <dt>Spec anchor</dt><dd id="info-ref"></dd>
+              <dt>Look for</dt><dd id="info-look"></dd>
+            </dl>
+          </div>
+
+          <div class="panel bandmap">
+            <div class="panel-h">Which bands this defect changes</div>
+            <svg id="bandmap" viewBox="0 0 460 100" role="img" aria-label="Bands of this product and the operations the selected defect applies to each"></svg>
+            <div class="bm-legend"><span><i></i>changed</span><span><i class="off"></i>unchanged</span><span>R, G, B: bands shown in the image</span></div>
+            <p class="bm-note">The same bands change at every severity. Severity only sets how strong the change is.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -320,15 +471,102 @@ footer .wrap { display: grid; gap: 8px; }
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">Paper Sec. 3 · Tab. 1</span>
-        <h2>Six defects, each tied to an instrument number</h2>
-        <p>Four primitives isolate one failure each; two chains combine them the way real acquisitions and harmonized products do. Click a card to load it in the explorer.</p>
+        <h2>Six defects, each set by a published sensor specification</h2>
+        <p>Four primitives isolate one failure each; two chains combine them the way real acquisitions and harmonized products do. Severities S1 to S3 follow the Sentinel-2 and Landsat 8 specifications. Select a card to see that defect in the explorer.</p>
       </div>
-      <div class="defects" id="defect-cards"></div>
+      <div class="defects" id="defect-cards">
+        <a class="defect" href="#explorer" data-fam="P1">
+          <img src="assets/explorer/cards/p1.jpg" alt="" width="96" height="96" loading="lazy">
+          <div>
+            <div class="id">P1</div>
+            <h3>Resolution loss</h3>
+            <p>Optical blur and a coarser detector: a Gaussian blur, averaging over \(N \times N\) pixels, then resizing back to the original grid.</p>
+            <dl>
+              <dt>Levels</dt><dd>\(N \in \{1, 2, 4\}\), \(\sigma = N/2\)</dd>
+              <dt>Anchor</dt><dd>keeps \(19\text{–}29\%\) of the contrast at the coarse Nyquist frequency; Sentinel-2 specifies \(15\text{–}30\%\)</dd>
+            </dl>
+          </div>
+        </a>
+        <a class="defect" href="#explorer" data-fam="P2">
+          <img src="assets/explorer/cards/p2.jpg" alt="" width="96" height="96" loading="lazy">
+          <div>
+            <div class="id">P2</div>
+            <h3>Calibration gain</h3>
+            <p>Every band multiplied by the same factor, as an absolute-calibration or cross-sensor error would. Band ratios such as NDVI are unchanged.</p>
+            <dl>
+              <dt>Levels</dt><dd>\(p = 1 \pm \alpha\), \(\alpha \in \{3, 8, 15\}\%\)</dd>
+              <dt>Anchor</dt><dd>Sentinel-2 requires \(&lt;5\%\) (goal \(3\%\)); Landsat 8 OLI \(\pm 3\%\)</dd>
+            </dl>
+          </div>
+        </a>
+        <a class="defect" href="#explorer" data-fam="P3">
+          <img src="assets/explorer/cards/p3.jpg" alt="" width="96" height="96" loading="lazy">
+          <div>
+            <div class="id">P3</div>
+            <h3>Band misregistration</h3>
+            <p>The red-edge, narrow-NIR and SWIR bands shift together against the fixed visible bands, so a pixel's bands no longer see the same ground.</p>
+            <dl>
+              <dt>Levels</dt><dd>\(\Delta \in \{0.3, 1, 2\}\) px</dd>
+              <dt>Anchor</dt><dd>Sentinel-2 requires \(&lt;0.3\) of the coarser pixel at \(3\sigma\), i.e. \(0.6\) px at \(10\,\mathrm{m}\)</dd>
+            </dl>
+          </div>
+        </a>
+        <a class="defect" href="#explorer" data-fam="P4">
+          <img src="assets/explorer/cards/p4.jpg" alt="" width="96" height="96" loading="lazy">
+          <div>
+            <div class="id">P4</div>
+            <h3>Sensor noise</h3>
+            <p>Gaussian noise in each band, scaled to that band's mean signal: \(\hat{x}_c = x_c + k\,\mu_c\,z_c\).</p>
+            <dl>
+              <dt>Levels</dt><dd>\(\mathrm{SNR} \in \{100, 33, 20\}\), \(k = 1/\mathrm{SNR}\)</dd>
+              <dt>Anchor</dt><dd>Sentinel-2 requires \(\mathrm{SNR} = 72\text{–}174\) at reference radiance</dd>
+            </dl>
+          </div>
+        </a>
+        <a class="defect" href="#explorer" data-fam="C1">
+          <img src="assets/explorer/cards/c1.jpg" alt="" width="96" height="96" loading="lazy">
+          <div>
+            <div class="id">C1</div>
+            <h3>Poor acquisition</h3>
+            <p>Gain error, blur and noise in one capture, with the noise added on the coarse grid: \(\hat{x} = U_N\big(D_N(G_\sigma * p\,x) + \epsilon\big)\).</p>
+            <dl>
+              <dt>Levels</dt><dd>P2, P1 and P4 at the same severity, both gain directions</dd>
+            </dl>
+          </div>
+        </a>
+        <a class="defect" href="#explorer" data-fam="C2">
+          <img src="assets/explorer/cards/c2.jpg" alt="" width="96" height="96" loading="lazy">
+          <div>
+            <div class="id">C2</div>
+            <h3>Harmonization residuals</h3>
+            <p>Infrared bands resampled and shifted (group \(\mathcal{G}\)) and rescaled (group \(\mathcal{H}\)) when bands or sensors are merged; visible bands stay fixed.</p>
+            <dl>
+              <dt>Levels</dt><dd>P1 and P3 on \(\mathcal{G}\), gain on \(\mathcal{H}\), same severity</dd>
+              <dt>Effect</dt><dd>band-selective, so ratios such as NDVI change</dd>
+            </dl>
+          </div>
+        </a>
+      </div>
+
+      <div class="figure" style="margin-top:18px">
+        <h3>Severity levels (paper Tab. 1)</h3>
+        <div class="tbl-wrap" style="margin-top:0">
+          <table class="sev-table">
+            <thead><tr><th>Severity</th><th>P1 resolution</th><th>P2 gain</th><th>P3 shift</th><th>P4 noise</th></tr></thead>
+            <tbody>
+              <tr><td>S1 mild</td><td>\(\sigma = 0.5,\ N = 1\)</td><td>\(\pm 3\%\)</td><td>\(0.3\) px</td><td>\(\mathrm{SNR} \approx 100\)</td></tr>
+              <tr><td>S2 moderate</td><td>\(\sigma = 1,\ N = 2\)</td><td>\(\pm 8\%\)</td><td>\(1\) px</td><td>\(\mathrm{SNR} \approx 33\)</td></tr>
+              <tr><td>S3 severe</td><td>\(\sigma = 2,\ N = 4\)</td><td>\(\pm 15\%\)</td><td>\(2\) px</td><td>\(\mathrm{SNR} \approx 20\)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note sev-note">\(\sigma\): blur width in native pixels. \(N\): the image is averaged over \(N \times N\) pixels, so a \(10\,\mathrm{m}\) product becomes effectively \(10N\,\mathrm{m}\). Gains apply in both directions. Shifts are in native pixels.</p>
+      </div>
 
       <div class="sec-head" style="margin-top:44px">
         <span class="eyebrow">Paper Sec. 3.4</span>
         <h3 style="font-size:1.35rem">Checked against the sensor itself</h3>
-        <p>Sentinel-2 measures near-infrared twice: band B08 at 10 m and band B8A at 20 m, over almost the same wavelengths. Passing the real 10 m band through P1's moderate setting reproduces the real 20 m band of the same scene. Across 3,000 test patches, the best-fitting blur width is σ = 0.75–1.5 pixels, bracketing the benchmark's σ = 1. The real misregistration between the two bands is only 0.02–0.05 px, so P3's 1–2 px levels are deliberate stress tests.</p>
+        <p>Sentinel-2 measures near-infrared twice: band B08 at 10 m and band B8A at 20 m, over almost the same wavelengths. Passing the real 10 m band through P1's moderate setting reproduces the real 20 m band of the same scene. Across 3,000 test patches, the best-fitting blur width is \(\sigma = 0.75\text{–}1.5\) pixels, bracketing the benchmark's \(\sigma = 1\). The real misregistration between the two bands is only \(0.02\text{–}0.05\) px, so P3's \(1\) and \(2\) px levels are deliberate stress tests.</p>
       </div>
       <div class="two">
         <div class="figure">
@@ -365,17 +603,25 @@ footer .wrap { display: grid; gap: 8px; }
       <div class="sec-head">
         <span class="eyebrow">Paper Fig. 3</span>
         <h2>Every model has its own fingerprint</h2>
-        <p>Relative drop from each model's clean score. Red cells lose accuracy, blue cells gain. Outlined cells are the worst in their column; hover any cell for its value. Gain families show the worse direction.</p>
+        <p>Relative drop (%) from each model's clean score: Top-1 accuracy on m-EuroSAT, micro-F1 on m-BigEarthNet, mIoU on the segmentation datasets. For P2, C1 and C2 each cell shows the worse gain direction. Hover a cell for its seed spread.</p>
       </div>
-      <div class="figure">
+      <div class="figure bleed">
         <div class="fig-controls">
           <span class="ctl-label">Severity</span>
-          <div class="pills" role="radiogroup" aria-label="Severity" id="hm-sev"></div>
-          <div class="scale" aria-hidden="true"><span>−5</span><canvas id="hm-scale" width="520" height="24"></canvas><span>100 % drop</span></div>
+          <div class="pills" role="radiogroup" aria-label="Severity" id="fp-sev"></div>
         </div>
-        <div class="heatmaps" id="heatmaps"></div>
-        <p class="note">ViT-B/16 and U-Net are trained from scratch on each task; gray cells are conditions a model's input contract does not define (band-group defects need infrared bands).</p>
-        <details class="table-view"><summary>Show as table</summary><div class="tbl-wrap" id="hm-table"></div></details>
+        <div class="fp-legend">
+          <span class="bar"><i></i><small><span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span></small></span>
+          <span>relative drop (%)</span>
+          <span><span class="sw neg"></span>negative: slightly better than clean</span>
+          <span><span class="sw na">×</span>not defined for this model or task</span>
+          <span><span class="sw max"></span>largest drop in the column</span>
+          <span><svg viewBox="-7 -7 14 14" aria-hidden="true"><g stroke="var(--frozen)" stroke-width="1.6" stroke-linecap="round"><path d="M0-6V6M-5.2-3 5.2 3M-5.2 3 5.2-3"/></g></svg>frozen encoder, clean-trained head</span>
+          <span><svg viewBox="-7 -7 14 14" aria-hidden="true"><path fill="var(--scratch)" d="M.6-6.5C3.9-3.2 5.6-.6 5.2 2.4 4.8 5 2.6 6.6 0 6.6S-5 5-5.2 2.3C-5.4-.2-3.6-1.6-2.6-3.6c.3 1.6 1 2.6 2.1 2.9C.6-2.6 1.3-4.4.6-6.5Z"/></svg>supervised, trained from scratch</span>
+        </div>
+        <p class="scroll-hint">Scroll sideways to see all five datasets.</p>
+        <div class="chart-scroll"><svg id="fp-svg" role="img" aria-label="Relative drop per model, dataset and defect family"></svg></div>
+        <details class="table-view"><summary>Show as table</summary><div class="tbl-wrap" id="fp-table"></div></details>
       </div>
     </div>
   </section>
@@ -505,7 +751,7 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
 
 <footer>
   <div class="wrap">
-    <span>Imagery: HLS Burn Scars (NASA and IBM) via PANGAEA; Copernicus Sentinel-2 data via GEO-Bench. Benchmark datasets from GEO-Bench and PANGAEA.</span>
+    <span>Imagery: Copernicus Sentinel-2 data (m-EuroSAT, m-BigEarthNet, m-SA-crop) and USDA NAIP aerial imagery (m-Chesapeake) via GEO-Bench; HLS Burn Scars (NASA and IBM) via PANGAEA. Map links: OpenStreetMap.</span>
     <span>© 2026 the authors · <a href="https://arxiv.org/abs/2609.23427" target="_blank" rel="noopener">arXiv:2609.23427</a></span>
   </div>
 </footer>
@@ -533,8 +779,8 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
     { key: "panopticon_vitb14", label: "Panopticon", kind: "any-sensor, wavelength-conditioned" },
     { key: "prithvi_eo_v2_600", label: "Prithvi 2.0", kind: "fixed multispectral ViT" },
     { key: "ramen_base", label: "RAMEN", kind: "resolution-conditioned" },
-    { key: "vit_b16_scratch", label: "ViT-B/16*", kind: "supervised from scratch (classification)" },
-    { key: "unet_scratch", label: "U-Net*", kind: "supervised from scratch (segmentation)" },
+    { key: "vit_b16_scratch", label: "ViT-B/16*", short: "ViT-B/16", kind: "supervised from scratch (classification)", scratch: true },
+    { key: "unet_scratch", label: "U-Net*", short: "U-Net", kind: "supervised from scratch (segmentation)", scratch: true },
   ];
   const FM = MODELS.slice(0, 7);
   const LABEL = Object.fromEntries(MODELS.map((m) => [m.key, m.label]));
@@ -555,6 +801,14 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
     t.textContent = s;
     return t;
   };
+  // Typeset TeX in a node once MathJax is ready; before that, MathJax's startup pass covers the whole page.
+  function typeset(node) {
+    const MJ = window.MathJax;
+    if (MJ && typeof MJ.typesetPromise === "function") {
+      if (MJ.typesetClear) MJ.typesetClear([node]);
+      MJ.typesetPromise([node]).catch(() => {});
+    }
+  }
   function famDrop(ds, model, fam, sev) {
     const row = DATA.drops[ds] && DATA.drops[ds][model];
     if (!row) return null;
@@ -615,127 +869,264 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
   }
 
   /* ---------- explorer ---------- */
-  const EX = {
-    P1: { code: "P1", label: "Resolution", dir: false },
-    P2: { code: "P2", label: "Gain", dir: true },
-    P3: { code: "P3", label: "Misregistration", dir: false },
-    P4: { code: "P4", label: "Noise", dir: false },
-    C1: { code: "C1", label: "Acquisition", dir: true },
-    C2: { code: "C2", label: "Harmonization", dir: true },
+  const SCENES = DATA.scenes;
+  const SC = Object.fromEntries(SCENES.map((s) => [s.key, s]));
+  const SENSOR = { "m-eurosat": "Sentinel-2", "m-bigearthnet": "Sentinel-2", "m-SA-crop-type": "Sentinel-2", "m-chesapeake": "NAIP aerial", "hls-burn-scars": "HLS" };
+  const EX = { P1: "Resolution", P2: "Gain", P3: "Misregistration", P4: "Noise", C1: "Acquisition", C2: "Harmonization" };
+  const FULL = { P1: "Resolution loss", P2: "Calibration gain", P3: "Band misregistration", P4: "Sensor noise", C1: "Poor-acquisition chain", C2: "Harmonization-residual chain" };
+  const GAIN_FAMS = new Set(["P2", "C1", "C2"]);
+  const P1S = { 1: [0.5, 1], 2: [1, 2], 3: [2, 4] };
+  const GAINS = { down: { 1: 0.97, 2: 0.92, 3: 0.85 }, up: { 1: 1.03, 2: 1.08, 3: 1.15 } };
+  const SHIFT = { 1: 0.3, 2: 1, 3: 2 };
+  const NOISE = { 1: [0.01, 100], 2: [0.03, 33], 3: [0.05, 20] };
+  const GROUP_TEXT = {
+    "B05,B06,B07,B8A,B11,B12": "the red-edge (B05–B07), narrow-NIR (B8A) and SWIR (B11, B12) bands",
+    "B08,B8A,B11,B12": "the NIR (B08, B8A) and SWIR (B11, B12) bands",
+    "NIR_NARROW,SWIR_1,SWIR_2": "the NIR, SWIR 1 and SWIR 2 bands",
   };
-  const GAIN = { down: [0.97, 0.92, 0.85], up: [1.03, 1.08, 1.15] };
-  const HLS_BANDS = [["BLUE", "490 nm"], ["GREEN", "560 nm"], ["RED", "665 nm"], ["NIR", "865 nm"], ["SWIR1", "1610 nm"], ["SWIR2", "2190 nm"]];
-  const ROLES = {
-    P1: ["blurred", "blurred", "blurred", "blurred", "blurred", "blurred"],
-    P2: ["scaled", "scaled", "scaled", "scaled", "scaled", "scaled"],
-    P3: ["", "", "", "shifted", "shifted", "shifted"],
-    P4: ["noise", "noise", "noise", "noise", "noise", "noise"],
-    C1: ["all three", "all three", "all three", "all three", "all three", "all three"],
-    C2: ["", "", "", "all three", "all three", "all three"],
-  };
-  function exFile(f, s, d) {
-    const m = { P1: `p1_s${s}`, P2: `p2_gain_${d}_s${s}`, P3: `p3_s${s}`, P4: `p4_s${s}`, C1: `c1_gain_${d}_s${s}`, C2: `c2_gain_${d}_s${s}` };
-    return `assets/explorer/${m[f]}.jpg`;
+  const groupText = (ids, cap) => { const t = GROUP_TEXT[ids.join(",")] || ids.join(", "); return cap ? t[0].toUpperCase() + t.slice(1) : t; };
+  const tex = (t) => `\\(${t}\\)`;
+  const num = (v) => String(+v.toFixed(2));
+  const metres = (v) => tex(`${num(v)}\\,\\mathrm{m}`);
+
+  const ex = { ds: "hls-burn-scars", f: "P3", s: 3, d: "down", mag: false };
+  const condName = (f, s, d) => ({ P1: `p1_s${s}`, P2: `p2_gain_${d}_s${s}`, P3: `p3_s${s}`, P4: `p4_s${s}`, C1: `c1_gain_${d}_s${s}`, C2: `c2_gain_${d}_s${s}` })[f];
+  const srcOf = (ds, cond) => `assets/explorer/${ds}/${cond}.${SC[ds].ext}`;
+  const available = (ds, f) => SC[ds].conditions.includes(condName(f, 1, "down"));
+  const isSmall = (sc) => Math.max(...sc.size) <= 128;
+
+  function settingHTML(sc, f, s, d) {
+    const [sig, N] = P1S[s], g = GAINS[d][s], dx = SHIFT[s], [k, snr] = NOISE[s], gsd = sc.gsd_m;
+    const coarse = N === 1 ? `on the native ${metres(gsd)} grid (no resampling)` : `averaged over ${tex(`${N} \\times ${N}`)} pixels to ${metres(N * gsd)}, then resized back`;
+    switch (f) {
+      case "P1": return `Gaussian blur ${tex(`\\sigma = ${sig}`)} px, ${coarse}.`;
+      case "P2": return `Every band multiplied by ${tex(`p = ${g}`)} (${d === "down" ? "darker" : "brighter"} by ${tex(`${Math.round(Math.abs(g - 1) * 100)}\\%`)}).`;
+      case "P3": return `${groupText(sc.groups.p3, true)} shifted by <span style="white-space:nowrap">${tex(`\\Delta = ${dx}`)} px (${metres(dx * gsd)})</span> in a fixed direction; the visible bands stay put.`;
+      case "P4": return `Gaussian noise with standard deviation ${tex(`${k}\\,\\mu_c`)} in each band ${tex("c")}, an added ${tex(`\\mathrm{SNR} = ${snr}`)}.`;
+      case "C1": return `Gain ${tex(`p = ${g}`)}, blur ${tex(`\\sigma = ${sig}`)} px, ${N === 1 ? "" : `averaging to ${metres(N * gsd)}, `}noise at ${tex(`\\mathrm{SNR} = ${snr}`)}${N === 1 ? ", all on the native grid" : " on that coarse grid, then resize back"}.`;
+      case "C2": {
+        const G = sc.groups.c2_geo, H = sc.groups.c2_rad, same = G.join() === H.join();
+        const geo = `resampled (${tex(`\\sigma = ${sig},\\ N = ${N}`)}) and shifted ${tex(`\\Delta = ${dx}`)} px`;
+        return same
+          ? `${groupText(G, true)} ${geo}, then multiplied by ${tex(`p = ${g}`)}. The visible bands stay fixed.`
+          : `${groupText(G, true)} ${geo}; ${groupText(H)} multiplied by ${tex(`p = ${g}`)}. The visible bands stay fixed.`;
+      }
+    }
+    return "";
   }
-  function exCaption(f, s, d) {
-    const g = GAIN[d][s - 1], gs = `×${g.toFixed(2)}`, px = [0.3, 1, 2][s - 1], gsd = [30, 60, 120][s - 1], snr = [100, 33, 20][s - 1], sig = [0.5, 1, 2][s - 1];
-    const t = {
-      P1: [`Blur σ = ${sig} px`, s === 1 ? "on the native 30 m grid" : `and resampling to ${gsd} m`, "· Sentinel-2's own optics sit at the same blur-to-pixel ratio."],
-      P2: [`Every band ${gs}.`, "", "Band ratios such as NDVI are unchanged; only absolute brightness moves."],
-      P3: [`NIR and SWIR shifted ${px} px (${Math.round(px * 30)} m)`, "against the visible bands.", "Look for colored fringes at edges."],
-      P4: [`Noise at SNR ${snr}`, `(std = ${[1, 3, 5][s - 1]}% of each band's mean).`, "Sentinel-2 requires SNR 72–174."],
-      C1: [`Gain ${gs}, blur to ${gsd} m, then noise at SNR ${snr}`, "on the coarse grid.", "One poor acquisition, three defects at once."],
-      C2: [`NIR and SWIR resampled to ${gsd} m, shifted ${px} px, scaled ${gs};`, "visible bands untouched.", "Band ratios change."],
+  const FORMULA = {
+    P1: "\\hat{x} = U_N\\big(D_N(G_\\sigma * x)\\big)",
+    P2: "\\hat{x} = p\\,x",
+    P3: "\\hat{x}_c = T_{\\Delta}(x_c),\\quad c \\in \\mathcal{S}",
+    P4: "\\hat{x}_c = x_c + k\\,\\mu_c\\,z_c,\\quad z_c \\sim \\mathcal{N}(0, I)",
+    C1: "\\hat{x} = U_N\\big(D_N(G_\\sigma * p\\,x) + \\epsilon\\big)",
+    C2: "\\hat{x} = A_p\\big(T_\\Delta(R(x;\\mathcal{G});\\mathcal{G});\\mathcal{H}\\big)",
+  };
+  function refHTML(f, s) {
+    switch (f) {
+      case "P1": return `${tex("\\sigma = N/2")} keeps ${tex("19\\text{–}29\\%")} of the contrast at the finest detail the coarse grid can hold; Sentinel-2 specifies ${tex("15\\text{–}30\\%")} for its 10 m bands.`;
+      case "P2": return `Sentinel-2 requires calibration within ${tex("5\\%")} (goal ${tex("3\\%")}); Landsat 8 OLI within ${tex("\\pm 3\\%")}. ` + ["S1 is calibration-grade.", "S2 exceeds the Sentinel-2 requirement, as a cross-sensor residual would.", "S3 is a stress level."][s - 1];
+      case "P3": return `Sentinel-2 requires band-to-band registration within ${tex("0.3")} of the coarser pixel at ${tex("3\\sigma")}, i.e. ${tex("0.6")} px at 10 m. ` + ["S1 is inside this bound.", "S2 is outside it.", "S3 is outside it."][s - 1];
+      case "P4": return `Sentinel-2 requires ${tex("\\mathrm{SNR} = 72\\text{–}174")} at reference radiance. ` + ["S1 adds noise at the instrument level.", "S2 mimics dark targets or a lower-grade sensor.", "S3 mimics dark targets or a lower-grade sensor."][s - 1];
+      case "C1": return "P2, P1 and P4 at the same severity in one capture, with the noise added on the coarse grid, as a noisy lower-resolution product resampled to a common grid would show.";
+      case "C2": return "What merging bands or sensors onto one grid can leave behind. The gain hits only some bands, so band ratios such as NDVI change.";
+    }
+    return "";
+  }
+  function lookFor(f, d) {
+    return {
+      P1: "Softer edges; small fields, roads and buildings blur away.",
+      P2: `The whole scene ${d === "down" ? "darker" : "brighter"}; colors keep their balance because every band changes by the same factor.`,
+      P3: "Colored fringes along edges, where the infrared and visible bands no longer line up.",
+      P4: "Grain across the whole scene, most visible in dark areas.",
+      C1: `Blur and coarse grain together, with the scene slightly ${d === "down" ? "darker" : "brighter"}.`,
+      C2: "Fringes and a color shift in the infrared-driven channels, while the visible band stays sharp.",
     }[f];
-    return t;
   }
-  const ex = { f: "P3", s: 3, d: "down" };
-  const preload = new Set();
-  function exRender() {
-    const conf = EX[ex.f];
-    $("img-after").src = exFile(ex.f, ex.s, ex.d);
-    $("tag-after").textContent = `${conf.code} · S${ex.s}${conf.dir ? (ex.d === "down" ? " ↓" : " ↑") : ""}`;
-    const [a, b, c] = exCaption(ex.f, ex.s, ex.d);
-    const cap = $("ex-caption");
-    cap.replaceChildren(document.createTextNode(`${a} ${b} `));
-    const m = document.createElement("span");
-    m.className = "mono";
-    m.textContent = c;
-    cap.appendChild(m);
-    const bands = $("ex-bands");
-    bands.replaceChildren();
-    HLS_BANDS.forEach(([name, wl], i) => {
-      const role = ROLES[ex.f][i];
-      const d = document.createElement("div");
-      d.className = "band" + (role ? " hit" : "");
-      const bb = document.createElement("b"); bb.textContent = name;
-      const w = document.createElement("span"); w.textContent = wl;
-      const r = document.createElement("span"); r.className = "role"; r.textContent = role || "unchanged";
-      d.append(bb, w, r);
-      bands.appendChild(d);
+
+  // dataset picker
+  const dsList = $("ds-list");
+  SCENES.forEach((sc) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "ds-btn"; b.dataset.ds = sc.key;
+    const im = document.createElement("img");
+    im.src = srcOf(sc.key, "clean"); im.alt = ""; im.width = 96; im.height = 96; im.loading = "lazy";
+    if (isSmall(sc)) im.className = "px";
+    const n = document.createElement("span"); n.className = "n"; n.textContent = sc.label;
+    const s = document.createElement("span"); s.className = "s";
+    [SENSOR[sc.key], `${num(sc.gsd_m)} m pixels`].forEach((t) => { const l = document.createElement("span"); l.textContent = t; s.appendChild(l); });
+    b.append(im, n, s);
+    b.addEventListener("click", () => { ex.ds = sc.key; exRender(); preloadScene(sc.key); });
+    dsList.appendChild(b);
+  });
+  radios($("ex-family"), "exf", Object.keys(EX).map((k) => ({ value: k, code: k, label: EX[k] })), ex.f, (v) => { ex.f = v; exRender(); });
+  radios($("ex-sev"), "exs", [1, 2, 3].map((s) => ({ value: String(s), code: `S${s}`, label: ["Mild", "Moderate", "Severe"][s - 1] })), String(ex.s), (v) => { ex.s = +v; exRender(); });
+  radios($("ex-dir"), "exd", [{ value: "down", label: "Down (darker)" }, { value: "up", label: "Up (brighter)" }], ex.d, (v) => { ex.d = v; exRender(); });
+
+  function fmtCoord(lat, lon) { return `${Math.abs(lat).toFixed(2)}° ${lat >= 0 ? "N" : "S"}, ${Math.abs(lon).toFixed(2)}° ${lon >= 0 ? "E" : "W"}`; }
+  function fmtDate(iso) { return new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }); }
+  function setDim(node, main, dim) {
+    node.replaceChildren(document.createTextNode(main));
+    if (dim) { const s = document.createElement("span"); s.className = "dim"; s.textContent = dim; node.appendChild(s); }
+  }
+  function renderSceneHead(sc) {
+    const name = $("scene-name");
+    name.replaceChildren(document.createTextNode(sc.label));
+    const sid = sc.sample.startsWith("tile") ? sc.sample : `sample ${sc.sample.replace(/^ref_south_africa_crops_competition_v1_train_labels_/, "")}`;
+    const sm = document.createElement("small"); sm.textContent = `${sc.task} · ${sid}`; name.appendChild(sm);
+    const loc = $("scene-loc");
+    if (sc.lat != null) {
+      const a = document.createElement("a");
+      a.href = `https://www.openstreetmap.org/?mlat=${sc.lat}&mlon=${sc.lon}#map=12/${sc.lat}/${sc.lon}`;
+      a.target = "_blank"; a.rel = "noopener";
+      a.textContent = `${sc.place} · ${fmtCoord(sc.lat, sc.lon)}`;
+      loc.replaceChildren(a);
+    } else setDim(loc, `${sc.place} `, "(exact location not recorded in GEO-Bench)");
+    if (sc.date) setDim($("scene-date"), fmtDate(sc.date), ` · ${sc.source}`);
+    else setDim($("scene-date"), "Date not recorded in GEO-Bench", ` · ${sc.source}`);
+    const km = sc.extent_km >= 1 ? `${num(sc.extent_km)} km` : `${Math.round(sc.extent_km * 1000)} m`;
+    setDim($("scene-res"), `${sc.size[1]} × ${sc.size[0]} px at ${num(sc.gsd_m)} m per pixel`, ` · ${km} across`);
+    $("scene-color").textContent = sc.composite.text;
+  }
+  function renderInfo(sc) {
+    const f = ex.f;
+    $("info-ds").innerHTML = "";
+    setDim($("info-ds"), `${sc.label} · ${sc.task}`, ` · ${sc.bands.length} bands`);
+    const defect = $("info-defect");
+    defect.replaceChildren();
+    const code = document.createElement("span"); code.className = "fam"; code.textContent = f;
+    defect.append(code, document.createTextNode(FULL[f]));
+    $("info-sev").textContent = `S${ex.s} · ${["mild", "moderate", "severe"][ex.s - 1]}` + (GAIN_FAMS.has(f) ? ` · gain ${ex.d === "down" ? "down (darker)" : "up (brighter)"}` : "");
+    $("info-setting").innerHTML = settingHTML(sc, f, ex.s, ex.d);
+    $("info-formula").innerHTML = tex(FORMULA[f]);
+    $("info-ref").innerHTML = refHTML(f, ex.s);
+    $("info-look").textContent = lookFor(f, ex.d);
+    typeset($("ex-info"));
+  }
+
+  const BAND_LABEL = { BLUE: "Blue", GREEN: "Green", RED: "Red", NIR_NARROW: "NIR", SWIR_1: "SWIR1", SWIR_2: "SWIR2", NIR: "NIR" };
+  function bandRows(sc, f) {
+    const all = sc.bands.map((b) => b.id);
+    return {
+      P1: [["Resolution (P1)", all]],
+      P2: [["Gain (P2)", all]],
+      P3: [["Shift (P3)", sc.groups.p3]],
+      P4: [["Noise (P4)", all]],
+      C1: [["Gain (P2)", all], ["Resolution (P1)", all], ["Noise (P4)", all]],
+      C2: [["Resolution (P1)", sc.groups.c2_geo], ["Shift (P3)", sc.groups.c2_geo], ["Gain (P2)", sc.groups.c2_rad]],
+    }[f].map(([l, ids]) => [l, new Set(ids)]);
+  }
+  function drawBandMap(sc) {
+    const svg = $("bandmap"); svg.replaceChildren();
+    const bands = [...sc.bands].sort((a, b) => a.nm - b.nm);
+    const rows = bandRows(sc, ex.f);
+    const W = 460, L = 100, top = 50, rh = 24;
+    const cw = Math.min(52, (W - L) / bands.length);
+    const H = top + rows.length * rh + 2;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const comp = sc.composite.bands, CC = ["#ff7070", "#5fd38d", "#6fa9ff"], CL = ["R", "G", "B"];
+    text(svg, 0, 12, "SHOWN AS", "bm-k"); text(svg, 0, 28, "BAND", "bm-k"); text(svg, 0, 41, "λ (NM)", "bm-k");
+    bands.forEach((b, i) => {
+      const cx = L + i * cw + cw / 2, ci = comp.indexOf(b.id);
+      if (ci >= 0) text(svg, cx, 12, CL[ci], "bm-rgb", "middle", { fill: CC[ci] });
+      text(svg, cx, 28, BAND_LABEL[b.id] ?? b.id, "bm-b", "middle");
+      text(svg, cx, 41, String(b.nm), "bm-nm", "middle");
+      rows.forEach(([, set], r) => {
+        const cy = top + r * rh + rh / 2;
+        if (set.has(b.id)) el("rect", { x: cx - (cw - 5) / 2, y: cy - 7, width: cw - 5, height: 14, rx: 3, class: "bm-on" }, svg);
+        else el("circle", { cx, cy, r: 2.4, class: "bm-off" }, svg);
+      });
     });
-    document.querySelectorAll("#ex-dir input").forEach((i) => { i.disabled = !conf.dir; });
-    updateLoupeImage();
+    rows.forEach(([label], r) => text(svg, 0, top + r * rh + rh / 2 + 4, label, "bm-row"));
+    svg.setAttribute("aria-label", `${sc.label} bands by wavelength. ` + rows.map(([l, set]) => `${l}: ${set.size === sc.bands.length ? "all bands" : [...set].map((id) => BAND_LABEL[id] ?? id).join(", ")}`).join(". "));
   }
-  radios($("ex-family"), "exf", Object.entries(EX).map(([k, v]) => ({ value: k, code: v.code, label: v.label })), ex.f, (v) => { ex.f = v; exRender(); });
-  radios($("ex-sev"), "exs", [1, 2, 3].map((s) => ({ value: String(s), label: ["Mild", "Moderate", "Severe"][s - 1] })), String(ex.s), (v) => { ex.s = +v; exRender(); });
-  radios($("ex-dir"), "exd", [{ value: "down", label: "Darker" }, { value: "up", label: "Brighter" }], ex.d, (v) => { ex.d = v; exRender(); });
-  const viewer = $("viewer"), split = $("split");
-  split.addEventListener("input", () => viewer.style.setProperty("--split", split.value + "%"));
-  // Loupe: magnifies the degraded product under the pointer.
-  const loupe = $("loupe"), loupeToggle = $("ex-loupe");
-  function updateLoupeImage() { loupe.style.backgroundImage = `url("${$("img-after").getAttribute("src")}")`; }
-  function moveLoupe(evt) {
-    if (!loupeToggle.checked) return;
-    const r = viewer.getBoundingClientRect(), x = evt.clientX - r.left, y = evt.clientY - r.top, z = 3, L = 150;
-    loupe.hidden = false;
-    loupe.style.left = x - L / 2 + "px"; loupe.style.top = y - L / 2 + "px";
-    loupe.style.backgroundSize = `${r.width * z}px ${r.height * z}px`;
-    loupe.style.backgroundPosition = `${-(x * z - L / 2)}px ${-(y * z - L / 2)}px`;
+
+  const viewer = $("viewer"), split = $("split"), tagL = $("tag-before"), tagR = $("tag-after");
+  function updateTags() {
+    const W = viewer.clientWidth, sx = (split.value / 100) * W;
+    tagL.classList.toggle("off", sx < tagL.offsetWidth + 18);
+    tagR.classList.toggle("off", W - sx < tagR.offsetWidth + 18);
   }
-  viewer.addEventListener("pointermove", moveLoupe);
-  viewer.addEventListener("pointerleave", () => { loupe.hidden = true; });
-  loupeToggle.addEventListener("change", () => { if (!loupeToggle.checked) loupe.hidden = true; });
-  function preloadAll() {
-    for (const f of Object.keys(EX)) for (const s of [1, 2, 3]) for (const d of ["down", "up"]) {
-      const src = exFile(f, s, d);
-      if (!preload.has(src)) { preload.add(src); const im = new Image(); im.src = src; }
+  function exRender() {
+    const sc = SC[ex.ds];
+    if (!available(ex.ds, ex.f)) ex.f = "P1";
+    document.querySelectorAll(".ds-btn").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.ds === ex.ds)));
+    document.querySelectorAll("#ex-family input").forEach((i) => { i.disabled = !available(ex.ds, i.value); i.checked = i.value === ex.f; });
+    document.querySelectorAll("#ex-sev input").forEach((i) => { i.checked = +i.value === ex.s; });
+    document.querySelectorAll("#ex-dir input").forEach((i) => { i.checked = i.value === ex.d; });
+    $("dir-row").hidden = !GAIN_FAMS.has(ex.f);
+    const na = $("ex-na");
+    na.hidden = sc.multispectral;
+    na.textContent = sc.multispectral ? "" : "P3 and C2 move infrared band groups against the visible bands. This 4-band aerial product has no such groups, so they are not defined (× in the results).";
+    const cond = condName(ex.f, ex.s, ex.d);
+    viewer.classList.toggle("px", isSmall(sc));
+    $("img-before").src = srcOf(ex.ds, "clean");
+    $("img-before").alt = `${sc.label} scene, clean product, false color`;
+    $("img-after").src = srcOf(ex.ds, cond);
+    $("img-after").alt = `The same scene after ${FULL[ex.f].toLowerCase()} at severity S${ex.s}`;
+    tagR.textContent = `${ex.f} · S${ex.s}${GAIN_FAMS.has(ex.f) ? (ex.d === "down" ? " ↓" : " ↑") : ""}`;
+    renderSceneHead(sc);
+    renderInfo(sc);
+    drawBandMap(sc);
+    updateTags();
+  }
+  split.addEventListener("input", () => { viewer.style.setProperty("--split", split.value + "%"); updateTags(); });
+  window.addEventListener("resize", updateTags);
+
+  // Magnifier: a 3x lens that shows clean and degraded on either side of the divider, like the image beneath it.
+  const lens = $("lens"), lensA = $("lens-a"), lensB = $("lens-b"), lensLine = $("lens-line"), magBtn = $("mag-btn");
+  const ZOOM = 3;
+  magBtn.addEventListener("click", () => {
+    ex.mag = !ex.mag;
+    magBtn.setAttribute("aria-pressed", String(ex.mag));
+    $("mag-label").textContent = ex.mag ? "Magnifier on" : "Magnifier";
+    viewer.classList.toggle("magnify", ex.mag);
+    $("viewer-note").textContent = ex.mag ? "Move the pointer over the image to magnify it 3×. Drag to move the divider." : "Left of the divider: the clean product. Right: the same product after the selected defect.";
+    if (!ex.mag) lens.hidden = true;
+  });
+  function moveLens(evt) {
+    if (!ex.mag) return;
+    const r = viewer.getBoundingClientRect(), x = evt.clientX - r.left, y = evt.clientY - r.top;
+    if (x < 0 || y < 0 || x > r.width || y > r.height) { lens.hidden = true; return; }
+    lens.hidden = false;
+    const L = lens.offsetWidth;
+    lens.style.left = `${x - L / 2}px`; lens.style.top = `${y - L / 2}px`;
+    const size = `${r.width * ZOOM}px ${r.height * ZOOM}px`, pos = `${-(x * ZOOM - L / 2)}px ${-(y * ZOOM - L / 2)}px`;
+    [[lensA, "img-before"], [lensB, "img-after"]].forEach(([node, id]) => {
+      node.style.backgroundImage = `url("${$(id).getAttribute("src")}")`;
+      node.style.backgroundSize = size; node.style.backgroundPosition = pos;
+    });
+    const sx = (split.value / 100) * r.width, dx = Math.max(0, Math.min(L, L / 2 + (sx - x) * ZOOM));
+    lensB.style.clipPath = `inset(0 0 0 ${dx}px)`;
+    lensLine.style.left = `${dx}px`;
+    lensLine.hidden = dx <= 0 || dx >= L;
+  }
+  viewer.addEventListener("pointermove", moveLens);
+  viewer.addEventListener("pointerdown", moveLens);
+  viewer.addEventListener("pointerleave", () => { lens.hidden = true; });
+  viewer.addEventListener("pointerup", (e) => { if (e.pointerType === "touch") lens.hidden = true; });
+  viewer.addEventListener("pointercancel", () => { lens.hidden = true; });
+
+  const preloaded = new Set();
+  function preloadScene(ds) {
+    for (const c of SC[ds].conditions) {
+      const src = srcOf(ds, c);
+      if (!preloaded.has(src)) { preloaded.add(src); const im = new Image(); im.src = src; }
     }
   }
   exRender();
-  if ("requestIdleCallback" in window) requestIdleCallback(preloadAll); else setTimeout(preloadAll, 800);
+  const idle = (fn) => ("requestIdleCallback" in window ? requestIdleCallback(fn) : setTimeout(fn, 800));
+  idle(() => preloadScene(ex.ds));
 
   /* ---------- defect cards ---------- */
-  const CARDS = [
-    ["P1", "Resolution loss", "A coarser sensor or resampling to a coarser grid: Gaussian PSF, then N×N area integration, then resize back.", "σ = N/2, N = 1, 2, 4 · contrast at Nyquist ≈ 0.29, inside Sentinel-2's 0.15–0.30 spec", "p1_s3"],
-    ["P2", "Calibration gain", "Every band scaled by the same factor, as calibration or cross-sensor drift does.", "±3 / 8 / 15 % · Sentinel-2 requires < 5 %, Landsat 8 ±3 %", "p2_gain_down_s3"],
-    ["P3", "Band misregistration", "The red-edge, narrow-NIR and SWIR bands slide against the fixed visible bands.", "0.3 / 1 / 2 px · Sentinel-2 requires < 0.6 px between 10 m and 20 m bands", "p3_s3"],
-    ["P4", "Sensor noise", "Band-wise Gaussian noise scaled to each band's mean signal.", "SNR 100 / 33 / 20 · Sentinel-2 requires 72–174 at reference radiance", "p4_s3"],
-    ["C1", "Poor acquisition", "Gain error, blur and noise in one capture, with the noise added on the coarse grid.", "P2 → P1 → P4 at matched severity, both gain directions", "c1_gain_down_s3"],
-    ["C2", "Harmonization residuals", "Infrared bands resampled, shifted and rescaled when sensors are merged; visible bands stay fixed.", "Band-selective, so NDVI-type ratios change", "c2_gain_down_s3"],
-  ];
-  const cardsEl = $("defect-cards");
-  CARDS.forEach(([code, name, desc, anchor, img]) => {
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "defect";
-    b.setAttribute("aria-label", `${code} ${name}: show in the explorer`);
-    const im = document.createElement("img");
-    im.src = `assets/explorer/${img}.jpg`; im.alt = ""; im.width = 96; im.height = 96; im.loading = "lazy";
-    const body = document.createElement("div");
-    const id = document.createElement("div"); id.className = "id"; id.textContent = code;
-    const h = document.createElement("h3"); h.textContent = name;
-    const p = document.createElement("p"); p.textContent = desc;
-    const a = document.createElement("div"); a.className = "anchor"; a.textContent = anchor;
-    body.append(id, h, p, a);
-    b.append(im, body);
-    b.addEventListener("click", () => {
-      ex.f = code; ex.s = 3;
-      document.querySelector(`#ex-family input[value="${code}"]`).checked = true;
-      document.querySelector(`#ex-sev input[value="3"]`).checked = true;
+  document.querySelectorAll("#defect-cards .defect").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      ex.f = a.dataset.fam; ex.s = 3;
+      if (!available(ex.ds, ex.f)) ex.ds = "hls-burn-scars";
       exRender();
-      $("top").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      $("explorer").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     });
-    cardsEl.appendChild(b);
   });
 
   /* ---------- stat tiles ---------- */
@@ -786,87 +1177,83 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
     tilesEl.appendChild(t);
   });
 
-  /* ---------- color: OKLab interpolation for the diverging scale ---------- */
+  /* ---------- fingerprint heatmap (paper Fig. 3 colors: soft OrRd for drops, Greens for gains) ---------- */
+  const ORRD = ["#fff5e6", "#feecd1", "#fee0b8", "#fdd49f", "#fdc68f", "#fdb27b", "#fc9662", "#f67c52", "#ef6447", "#df432d", "#ce2417"];
+  const GREENS = ["#e6f5e1", "#cfecc9", "#b5e1ae", "#97d492", "#73c476"];
   const hex2rgb = (h) => { h = h.replace("#", ""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
   const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-  const delin = (c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
-  function toOklab([r, g, b]) {
-    r = lin(r); g = lin(g); b = lin(b);
-    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b), m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b), s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
-    return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s];
-  }
-  function fromOklab([L, a, b]) {
-    const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3, m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3, s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
-    const rgb = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s];
-    return "#" + rgb.map((c) => Math.round(Math.min(1, Math.max(0, delin(c))) * 255).toString(16).padStart(2, "0")).join("");
-  }
-  const mix = (h1, h2, t) => { const a = toOklab(hex2rgb(h1)), b = toOklab(hex2rgb(h2)); return fromOklab(a.map((v, i) => v + (b[i] - v) * t)); };
   const luminance = (h) => { const [r, g, b] = hex2rgb(h).map(lin); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
-  const posT = (v) => Math.sqrt(Math.min(Math.max(v, 0), 100) / 100);
-  function divColor(v) {
-    const mid = css("--div-mid"), pos = css("--div-pos"), neg = css("--div-neg");
-    return v >= 0 ? mix(mid, pos, posT(v)) : mix(mid, neg, Math.min(-v, 5) / 5);
+  function ramp(stops, t) {
+    const x = Math.min(1, Math.max(0, t)) * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(x)), f = x - i;
+    const a = hex2rgb(stops[i]), b = hex2rgb(stops[i + 1]);
+    return "#" + a.map((v, k) => Math.round((v + (b[k] - v) * f) * 255).toString(16).padStart(2, "0")).join("");
   }
-
-  /* ---------- heatmaps ---------- */
-  let hmSev = 3;
-  function drawScale() {
-    const c = $("hm-scale"), ctx = c.getContext("2d"), W = c.width, H = c.height;
-    const negW = W * 0.12;
-    for (let x = 0; x < W; x++) {
-      const v = x < negW ? -5 + (x / negW) * 5 : 100 * ((x - negW) / (W - negW)) ** 2;
-      ctx.fillStyle = divColor(v);
-      ctx.fillRect(x, 0, 1, H);
-    }
-  }
-  function drawHeatmaps() {
-    const wrap = $("heatmaps");
-    wrap.replaceChildren();
-    const rows = [];
-    DATASETS.forEach((ds) => {
-      const box = document.createElement("div"); box.className = "hm";
-      const h = document.createElement("h3"); h.textContent = ds.label;
-      const sub = document.createElement("div"); sub.className = "sub"; sub.textContent = ds.task;
-      box.append(h, sub);
-      const models = MODELS.filter((m) => DATA.drops[ds.key] && DATA.drops[ds.key][m.key]);
-      const cw = 24, ch = 20, left = 74, top = 18;
-      const svg = el("svg", { viewBox: `0 0 ${left + cw * 6 + 4} ${top + ch * models.length + 4}`, role: "img", "aria-label": `Fingerprint heatmap for ${ds.label}` });
-      FAMS.forEach((f, j) => text(svg, left + j * cw + cw / 2, 12, f, "lbl", "middle"));
-      const colMax = FAMS.map((f) => {
-        let best = null;
-        models.forEach((m) => { const d = famDrop(ds.key, m.key, f, hmSev); if (d && (best == null || d.v > best.v)) best = { v: d.v, m: m.key }; });
-        return best;
-      });
-      models.forEach((m, i) => {
-        text(svg, left - 6, top + i * ch + ch / 2 + 4, m.label, "lbl", "end");
-        const vals = [];
-        FAMS.forEach((f, j) => {
-          const d = famDrop(ds.key, m.key, f, hmSev);
-          const x = left + j * cw, y = top + i * ch;
-          const isMax = d && colMax[j] && colMax[j].m === m.key;
-          const r = el("rect", { x, y, width: cw, height: ch, rx: 3, class: "cell" + (d ? "" : " na") + (isMax ? " max" : ""), tabindex: d ? 0 : -1 }, svg);
-          vals.push(d ? fmt(d.v) : "–");
-          if (!d) return;
-          r.setAttribute("fill", divColor(d.v));
-          const sd = DATA.std[ds.key][m.key][d.c];
-          const lines = [{ text: `${fmt(d.v)}% ${d.v < 0 ? "gain" : "drop"}` }, { text: `${m.label} · ${ds.label}` }, { text: `${f} S${hmSev}${d.c.includes("_up_") ? " (gain up)" : d.c.includes("_down_") ? " (gain down)" : ""} · ±${fmt(sd)} over seeds` }];
-          r.addEventListener("pointermove", (e) => showTip(e, lines));
-          r.addEventListener("pointerleave", hideTip);
-          r.addEventListener("focus", (e) => showTip({ target: r, clientX: r.getBoundingClientRect().right, clientY: r.getBoundingClientRect().top }, lines));
-          r.addEventListener("blur", hideTip);
-          if (isMax) {
-            const fill = divColor(d.v);
-            text(svg, x + cw / 2, y + ch / 2 + 4, d.v >= 99.5 ? "100" : d.v >= 10 ? d.v.toFixed(0) : d.v.toFixed(1), "", "middle", { fill: luminance(fill) > 0.32 ? "#0b0b0b" : "#ffffff", "font-size": "10.5", "font-weight": "650", "pointer-events": "none" });
-          }
-        });
-        rows.push([ds.label, m.label, ...vals]);
-      });
-      box.appendChild(svg);
-      wrap.appendChild(box);
+  const inkOn = (bg) => { const L = luminance(bg); return (L + 0.05) / 0.05 > 1.05 / (L + 0.05) ? "#1c1c1c" : "#ffffff"; };
+  const fpFmt = (v) => (Math.abs(v) >= 10 ? v.toFixed(0) : Math.abs(v) < 0.05 ? "0.0" : v.toFixed(1));
+  const snowflake = (g, cx, cy) => { const p = el("path", { d: `M${cx} ${cy - 5}v10M${cx - 4.3} ${cy - 2.5}l8.6 5M${cx - 4.3} ${cy + 2.5}l8.6-5`, stroke: css("--frozen"), "stroke-width": 1.5, "stroke-linecap": "round", fill: "none" }, g); return p; };
+  const flame = (g, cx, cy) => el("path", { d: "M.6-6.5C3.9-3.2 5.6-.6 5.2 2.4 4.8 5 2.6 6.6 0 6.6S-5 5-5.2 2.3C-5.4-.2-3.6-1.6-2.6-3.6c.3 1.6 1 2.6 2.1 2.9C.6-2.6 1.3-4.4.6-6.5Z", fill: css("--scratch"), transform: `translate(${cx} ${cy}) scale(0.8)` }, g);
+  let fpSev = 3;
+  function drawFingerprints() {
+    const svg = $("fp-svg"); svg.replaceChildren();
+    const LW = 126, CW = 34, CH = 28, GG = 12, DG = 26, TITLE = 20, GROUP = 22, BOTTOM = 26;
+    const panelW = 6 * CW + GG;
+    const W = LW + DATASETS.length * panelW + (DATASETS.length - 1) * DG + 4;
+    const top = TITLE + GROUP, H = top + MODELS.length * CH + BOTTOM;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.style.maxWidth = `${W * 1.08}px`;
+    const defs = el("defs", {}, svg);
+    const pat = el("pattern", { id: "fp-hatch", width: 5, height: 5, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, defs);
+    el("line", { x1: 0, y1: 0, x2: 0, y2: 5, stroke: css("--axis"), "stroke-width": 1.6 }, pat);
+    // shared green scale from the plotted improvements
+    const vals = [];
+    DATASETS.forEach((ds) => MODELS.forEach((m) => FAMS.forEach((f) => { const d = famDrop(ds.key, m.key, f, fpSev); if (d) vals.push(d.v); })));
+    const negMax = Math.max(1e-6, ...vals.filter((v) => v < 0).map((v) => -v));
+    const colX = (k, j) => LW + k * (panelW + DG) + j * CW + (j >= 4 ? GG : 0);
+    MODELS.forEach((m, i) => {
+      const y = top + i * CH + CH / 2;
+      text(svg, LW - 22, y + 4.5, m.short || m.label, "fp-model", "end");
+      if (m.scratch) flame(svg, LW - 12, y); else snowflake(svg, LW - 12, y);
     });
-    table($("hm-table"), ["Dataset", "Model", ...FAMS.map((f) => `${f} S${hmSev} (%)`)], rows);
+    const rows = [];
+    DATASETS.forEach((ds, k) => {
+      const x0 = colX(k, 0);
+      text(svg, x0 + panelW / 2, 14, ds.label, "fp-title", "middle");
+      text(svg, x0 + (4 * CW) / 2, TITLE + 15, "Primitives", "fp-group", "middle");
+      text(svg, colX(k, 4) + CW, TITLE + 15, "Compounds", "fp-group", "middle");
+      FAMS.forEach((f, j) => text(svg, colX(k, j) + CW / 2, H - 8, f, "fp-fam", "middle"));
+      el("line", { x1: x0 + 4 * CW + GG / 2, x2: x0 + 4 * CW + GG / 2, y1: top - 2, y2: top + MODELS.length * CH + 2, stroke: css("--ink-2"), "stroke-width": 1.3 }, svg);
+      if (k < DATASETS.length - 1) el("rect", { x: x0 + panelW + DG / 2 - 4, y: top, width: 8, height: MODELS.length * CH, fill: "url(#fp-hatch)" }, svg);
+      const colMax = FAMS.map((f) => Math.max(0, ...MODELS.map((m) => { const d = famDrop(ds.key, m.key, f, fpSev); return d ? d.v : 0; })));
+      MODELS.forEach((m, i) => {
+        const y = top + i * CH, out = [];
+        FAMS.forEach((f, j) => {
+          const x = colX(k, j), d = famDrop(ds.key, m.key, f, fpSev);
+          if (!d) {
+            el("rect", { x: x + 1, y: y + 1, width: CW - 2, height: CH - 2, fill: css("--na") }, svg);
+            text(svg, x + CW / 2, y + CH / 2 + 4.5, "×", "fp-na", "middle");
+            out.push("–");
+            return;
+          }
+          const fill = d.v >= 0 ? ramp(ORRD, d.v / 100) : ramp(GREENS, -d.v / negMax);
+          const cell = el("rect", { x: x + 1, y: y + 1, width: CW - 2, height: CH - 2, fill, class: "cell", tabindex: 0 }, svg);
+          text(svg, x + CW / 2, y + CH / 2 + 4, fpFmt(d.v), "fp-val", "middle", { fill: inkOn(fill) });
+          if (colMax[j] > 0 && d.v === colMax[j]) el("rect", { x: x + 2.5, y: y + 2.5, width: CW - 5, height: CH - 5, fill: "none", stroke: css("--cell-max"), "stroke-width": 2.2, "pointer-events": "none" }, svg);
+          const sd = DATA.std[ds.key][m.key][d.c];
+          const dir = d.c.includes("_up_") ? " · gain up" : d.c.includes("_down_") ? " · gain down" : "";
+          const lines = [{ text: `${fmt(d.v)}% ${d.v < 0 ? "better than clean" : "drop"}` }, { text: `${m.label} · ${ds.label}` }, { text: `${f} S${fpSev}${dir} · ±${fmt(sd)} over 3 seeds` }];
+          cell.setAttribute("aria-label", `${m.label}, ${ds.label}, ${f}: ${fmt(d.v)} percent`);
+          cell.addEventListener("pointermove", (e) => showTip(e, lines));
+          cell.addEventListener("pointerleave", hideTip);
+          cell.addEventListener("focus", () => { const r = cell.getBoundingClientRect(); showTip({ target: cell, clientX: r.right, clientY: r.top }, lines); });
+          cell.addEventListener("blur", hideTip);
+          out.push(fmt(d.v));
+        });
+        rows.push([ds.label, m.label, ...out]);
+      });
+    });
+    table($("fp-table"), ["Dataset", "Model", ...FAMS.map((f) => `${f} S${fpSev} (%)`)], rows);
   }
-  radios($("hm-sev"), "hms", [1, 2, 3].map((s) => ({ value: String(s), label: `S${s} ${["mild", "moderate", "severe"][s - 1]}` })), "3", (v) => { hmSev = +v; drawHeatmaps(); });
+  radios($("fp-sev"), "fps", [1, 2, 3].map((s) => ({ value: String(s), label: `S${s} ${["mild", "moderate", "severe"][s - 1]}` })), "3", (v) => { fpSev = +v; drawFingerprints(); });
 
   /* ---------- ranking slope chart ---------- */
   let rkDs = "m-eurosat";
@@ -964,10 +1351,10 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
       hit.addEventListener("pointermove", (e) => showTip(e, lines));
       hit.addEventListener("pointerleave", hideTip);
     });
-    const ex = excessOf(ch.ds, ch.m, "C1");
+    const best = excessOf(ch.ds, ch.m, "C1");
     const exDir = [0, 1, 2].map((i) => S.C1[i] - comp[i]);
     const iBest = exDir.indexOf(Math.max(...exDir));
-    $("ch-readout").textContent = `${LABEL[ch.m]} on ${DSLABEL[ch.ds]}: C1 exceeds its worst component by ${fmt(exDir[iBest])} pp at S${iBest + 1} (${fmt(S.C1[iBest])}% vs ${fmt(comp[iBest])}%).` + (ex && (ex.d !== ch.d) ? ` Largest overall: ${fmt(ex.e)} pp with gain ${ex.d}.` : "");
+    $("ch-readout").textContent = `${LABEL[ch.m]} on ${DSLABEL[ch.ds]}: C1 exceeds its worst component by ${fmt(exDir[iBest])} pp at S${iBest + 1} (${fmt(S.C1[iBest])}% vs ${fmt(comp[iBest])}%).` + (best && (best.d !== ch.d) ? ` Largest overall: ${fmt(best.e)} pp with gain ${best.d}.` : "");
     table($("ch-table"), ["Severity", ...CH_SERIES.map((s) => `${s[2]} (%)`), "Excess (pp)"], [0, 1, 2].map((i) => [`S${i + 1}`, ...CH_SERIES.map(([k]) => fmt(S[k][i])), fmt(S.C1[i] - comp[i])]));
   }
   const chDs = $("ch-ds"), chModel = $("ch-model");
@@ -1085,7 +1472,7 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
     setTimeout(() => { btn.textContent = "Copy"; }, 2200);
   });
 
-  function drawAll() { drawScale(); drawHeatmaps(); drawRanks(); drawChain(); drawExcessList(); drawRecovery(); drawRealism(); }
+  function drawAll() { drawFingerprints(); drawRanks(); drawChain(); drawExcessList(); drawRecovery(); drawRealism(); }
   drawAll(); drawModels();
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
   new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });

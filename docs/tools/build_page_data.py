@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build docs/assets/data.json for the project page from the shipped results.
 
-Inputs: results/rspdbench_aggregate.csv, results/realism_s2_b08_b8a_summary.csv, and the
-degradation-aware probe summary in docs/tools/inputs/.
+Inputs: results/rspdbench_aggregate.csv, results/realism_s2_b08_b8a_summary.csv, the
+degradation-aware probe summary in docs/tools/inputs/, and the explorer scene list written by
+docs/tools/build_explorer_assets.py.
 Run from the repository root: python docs/tools/build_page_data.py
 """
 import json
@@ -19,7 +20,8 @@ for r in agg.itertuples():
     if r.condition == "clean":
         clean.setdefault(r.dataset, {})[r.model] = round(float(r.metric_mean) * 100, 2)
     else:
-        drops.setdefault(r.dataset, {}).setdefault(r.model, {})[r.condition] = round(float(r.relative_drop_pct_mean), 2)
+        # four decimals so the page rounds the same way as the paper figures (17.49975 -> 17, not 17.5 -> 18)
+        drops.setdefault(r.dataset, {}).setdefault(r.model, {})[r.condition] = round(float(r.relative_drop_pct_mean), 4)
         std.setdefault(r.dataset, {}).setdefault(r.model, {})[r.condition] = round(float(r.relative_drop_pct_std), 2)
 
 mit = pd.read_csv(inp / "mitigation_ben_family_s3.csv")
@@ -28,6 +30,10 @@ mitigation = {fam: {"original": round(g.original.mean(), 1), "aware": round(g.au
 real = pd.read_csv(ROOT / "results/realism_s2_b08_b8a_summary.csv")
 realism = {k: [{"sigma": float(r.sigma), "r": float(r.median_r)} for r in g.itertuples()] for k, g in real.groupby("dataset")}
 
-out = {"clean": clean, "drops": drops, "std": std, "mitigation": mitigation, "realism": realism}
+scenes = json.loads((ROOT / "docs/assets/explorer/scenes.json").read_text())
+for sc in scenes:
+    sc.pop("band_mean", None)  # not needed by the page
+
+out = {"clean": clean, "drops": drops, "std": std, "mitigation": mitigation, "realism": realism, "scenes": scenes}
 (ROOT / "docs/assets/data.json").write_text(json.dumps(out, separators=(",", ":")))
 print("wrote docs/assets/data.json", round(len(json.dumps(out)) / 1024, 1), "KB")

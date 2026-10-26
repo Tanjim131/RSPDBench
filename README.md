@@ -92,11 +92,12 @@ The operators here are bit-identical to the implementation behind the m-BigEarth
 `docs/index.html` is generated from `docs/tools/page.src.html` with the results inlined:
 
 ```bash
+GEO_BENCH_DIR=/path/to/geobench python docs/tools/build_explorer_assets.py --hls-tif /path/to/<HLS tile>.tif
 python docs/tools/build_page_data.py
 python docs/tools/build_site.py --repo-url https://github.com/<owner>/RSPDBench --site-url https://<owner>.github.io/RSPDBench/
 ```
 
-The explorer images come from `examples/render_conditions.py` and the link-preview image from `docs/tools/make_og_image.py`.
+`build_explorer_assets.py` renders one scene per dataset under every condition with the released operators (clean training-set band means for P4/C1) and records each scene's location, date, resolution and false-color bands. The link-preview image comes from `docs/tools/make_og_image.py`.
 
 ## Citation
 
@@ -113,4 +114,4 @@ The explorer images come from `examples/render_conditions.py` and the link-previ
 
 ## License and data
 
-Code: MIT (see `LICENSE`). The project page shows an HLS Burn Scars tile (NASA and IBM, via PANGAEA) and a Copernicus Sentinel-2 patch via GEO-Bench; the benchmark datasets keep their own licenses.
+Code: MIT (see `LICENSE`). The project page shows one scene per dataset: Copernicus Sentinel-2 data (m-EuroSAT, m-BigEarthNet, m-SA-crop) and USDA NAIP imagery (m-Chesapeake) via GEO-Bench, and an HLS Burn Scars tile (NASA and IBM) via PANGAEA; the benchmark datasets keep their own licenses.

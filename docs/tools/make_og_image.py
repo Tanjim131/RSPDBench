@@ -31,11 +31,12 @@ d.text((64, 556), "arxiv.org/abs/2609.23427", font=small, fill=INK2)
 
 tiles = [("clean.jpg", "CLEAN"), ("p1_s3.jpg", "P1 RESOLUTION"), ("p3_s3.jpg", "P3 MISREGISTRATION"),
          ("p4_s3.jpg", "P4 NOISE"), ("c1_gain_down_s3.jpg", "C1 ACQUISITION"), ("c2_gain_down_s3.jpg", "C2 HARMONIZATION")]
+HLS = ROOT / "explorer" / "hls-burn-scars"
 size, gap, x0, y0 = 172, 10, 600, 92
 for i, (name, label) in enumerate(tiles):
     r, c = divmod(i, 3)
     x, y = x0 + c * (size + gap), y0 + r * (size + 44 + gap)
-    tile = Image.open(ROOT / "explorer" / name).crop((96, 96, 416, 416)).resize((size, size), Image.LANCZOS)
+    tile = Image.open(HLS / name).crop((96, 96, 416, 416)).resize((size, size), Image.LANCZOS)
     img.paste(tile, (x, y))
     d.text((x, y + size + 10), label, font=mono, fill=INK2)
 img.save(ROOT / "og.png", optimize=True)
