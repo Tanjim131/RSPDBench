@@ -24,8 +24,8 @@ DESCRIPTION = ("How do Earth-observation foundation models hold up when the sate
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--repo-url", default=PLACEHOLDER_REPO)
-    ap.add_argument("--site-url", default="https://TODO.github.io/RSPDBench/")
+    ap.add_argument("--repo-url", default="https://github.com/Tanjim131/RSPDBench")
+    ap.add_argument("--site-url", default="https://tanjim131.github.io/RSPDBench/")
     ap.add_argument("--fragment-out", type=Path, help="also write a bare fragment + assets here (for previews)")
     args = ap.parse_args()
 

@@ -9,13 +9,13 @@
 <meta property="og:site_name" content="RSPDBench">
 <meta property="og:title" content="RSPDBench: Earth-observation foundation models under real satellite product defects">
 <meta property="og:description" content="How do Earth-observation foundation models hold up when the satellite product itself is degraded? RSPDBench applies physically grounded resolution, calibration, misregistration, noise and harmonization defects to five datasets and nine models. WACV 2027.">
-<meta property="og:url" content="https://TODO.github.io/RSPDBench/">
-<meta property="og:image" content="https://TODO.github.io/RSPDBench/assets/og.png">
+<meta property="og:url" content="https://tanjim131.github.io/RSPDBench/">
+<meta property="og:image" content="https://tanjim131.github.io/RSPDBench/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="RSPDBench title beside six versions of a satellite burn-scar image: clean, blurred, misregistered, noisy and two compound defects">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://TODO.github.io/RSPDBench/assets/og.png">
+<meta name="twitter:image" content="https://tanjim131.github.io/RSPDBench/assets/og.png">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -381,7 +381,7 @@ footer .wrap { display: grid; gap: 8px; }
       <div class="buttons">
         <a class="btn primary" href="https://arxiv.org/abs/2609.23427" target="_blank" rel="noopener">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></svg>Paper (arXiv)</a>
-        <a class="btn" href="https://github.com/TODO/RSPDBench" target="_blank" rel="noopener">
+        <a class="btn" href="https://github.com/Tanjim131/RSPDBench" target="_blank" rel="noopener">
           <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
         <a class="btn" href="#citation">BibTeX</a>
       </div>
@@ -416,7 +416,7 @@ footer .wrap { display: grid; gap: 8px; }
             </dl>
             <div class="provenance">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5.5 4.5-4 3.5 4 3.5M10.5 4.5l4 3.5-4 3.5"/></svg>
-              <span>Degraded with the released <a href="https://github.com/TODO/RSPDBench/blob/main/rspdbench/operators.py" target="_blank" rel="noopener">rspdbench</a> code</span>
+              <span>Degraded with the released <a href="https://github.com/Tanjim131/RSPDBench/blob/main/rspdbench/operators.py" target="_blank" rel="noopener">rspdbench</a> code</span>
             </div>
           </figcaption>
           <div class="viewer" id="viewer" style="--split: 50%">
@@ -731,7 +731,7 @@ footer .wrap { display: grid; gap: 8px; }
         <h2>Run the degradations on your own model</h2>
         <p>The operators work on any (bands, height, width) tensor in native product units. Apply them before your model's own normalization, keep the head trained on clean data, and report the drop from your clean score.</p>
       </div>
-      <pre class="code"><span class="c"># pip install git+https://github.com/TODO/RSPDBench</span>
+      <pre class="code"><span class="c"># pip install git+https://github.com/Tanjim131/RSPDBench</span>
 <span class="k">import</span> rspdbench <span class="k">as</span> rb
 
 contract = rb.get_contract(<span class="s">"hls-burn-scars"</span>)

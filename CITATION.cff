@@ -2,6 +2,8 @@ cff-version: 1.2.0
 message: "If you use RSPDBench, please cite the paper."
 title: "RSPDBench"
 type: software
+repository-code: "https://github.com/Tanjim131/RSPDBench"
+url: "https://tanjim131.github.io/RSPDBench/"
 authors:
   - family-names: "Faruk"
     given-names: "Tanjim Bin"

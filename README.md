@@ -3,7 +3,7 @@
 **Benchmarking Vision Foundation Models on Earth Observation Tasks Under Physically Grounded Remote-Sensing Product Degradations**
 Tanjim Bin Faruk, Khondaker Masfiq Reza, Shrideep Pallickara, Sangmi Lee Pallickara · Colorado State University · **WACV 2027**
 
-[Paper (arXiv:2609.23427)](https://arxiv.org/abs/2609.23427) · [Project page](https://TODO.github.io/RSPDBench/)
+[Paper (arXiv:2609.23427)](https://arxiv.org/abs/2609.23427) · [Project page](https://tanjim131.github.io/RSPDBench/)
 
 ![RSPDBench: one burn-scar scene under six product defects](docs/assets/og.png)
 
@@ -23,8 +23,8 @@ Satellite images reach models as processed products, and products carry defects:
 ## Install
 
 ```bash
-pip install git+https://github.com/TODO/RSPDBench          # operators only: numpy, torch
-pip install "rspdbench[examples] @ git+https://github.com/TODO/RSPDBench"   # + data/plotting extras
+pip install git+https://github.com/Tanjim131/RSPDBench          # operators only: numpy, torch
+pip install "rspdbench[examples] @ git+https://github.com/Tanjim131/RSPDBench"   # + data/plotting extras
 ```
 
 ## Quick start

@@ -22,6 +22,8 @@ examples = ["pandas", "scipy", "matplotlib", "pillow", "h5py", "rasterio", "scik
 test = ["pytest"]
 
 [project.urls]
+Homepage = "https://tanjim131.github.io/RSPDBench/"
+Repository = "https://github.com/Tanjim131/RSPDBench"
 Paper = "https://arxiv.org/abs/2609.23427"
 
 [tool.setuptools]
