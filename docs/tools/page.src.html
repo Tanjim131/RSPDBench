@@ -226,11 +226,12 @@ section.band-sec { padding-block: 56px; border-bottom: 1px solid var(--rule); }
 .sev-table td { white-space: normal; }
 .sev-note { max-width: none; }
 
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; }
 .tile { padding: 18px 18px 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; display: grid; gap: 8px; align-content: start; }
-.tile .value { font: 750 clamp(2.2rem, 4vw, 2.9rem)/1 var(--font-display); letter-spacing: -0.02em; }
-.tile .value small { font-size: 0.5em; font-weight: 600; margin-left: 2px; }
-.tile p { font: 400 0.92rem/1.45 var(--font-display); color: var(--ink-2); }
+.tile h3 { font-size: 1.12rem; }
+.tile p { font: 400 0.95rem/1.5 var(--font-display); color: var(--ink-2); }
+.tile a { font: 600 0.88rem/1.2 var(--font-display); text-decoration: none; }
+.tile a:hover { text-decoration: underline; }
 
 .figure { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
 .figure.bleed { width: min(1320px, calc(100vw - 32px)); margin-left: calc(50% - min(660px, 50vw - 16px)); }
@@ -246,9 +247,9 @@ select { font: 500 0.88rem/1 var(--font-display); color: var(--ink); background:
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; }
 .legend i.dot { width: 9px; height: 9px; border-radius: 50%; }
-.readout { font: 500 0.92rem/1.45 var(--font-display); color: var(--ink); }
+.readout { font: 500 0.92rem/1.45 var(--font-display); color: var(--ink); max-width: none; }
 .readout .mono { color: var(--ink-2); }
-.note { font: 400 0.84rem/1.45 var(--font-display); color: var(--ink-3); }
+.note { font: 400 0.84rem/1.45 var(--font-display); color: var(--ink-3); max-width: none; }
 svg text { font-family: var(--font-display); }
 .ax text, .tick text { fill: var(--ink-3); font-size: 11px; }
 .ax line, .ax path { stroke: var(--axis); }
@@ -272,8 +273,9 @@ svg text { font-family: var(--font-display); }
 #fp-svg .fp-na { fill: var(--na-ink); font-size: 12px; font-weight: 700; pointer-events: none; }
 #fp-svg rect.cell { outline: none; }
 #fp-svg rect.cell:hover, #fp-svg rect.cell:focus { stroke: var(--focus); stroke-width: 2.5; }
-.fp-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px; font: 500 0.82rem/1.25 var(--font-display); color: var(--ink-2); }
-.fp-legend > span { display: inline-flex; align-items: center; gap: 8px; }
+.fp-legend { display: grid; gap: 10px; }
+.fp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px; font: 500 0.82rem/1.25 var(--font-display); color: var(--ink-2); }
+.fp-row > span { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .fp-legend .bar { display: inline-grid; gap: 3px; }
 .fp-legend .bar i { display: block; width: 190px; height: 11px; border-radius: 2px; background: linear-gradient(90deg, #fff5e6, #feecd1, #fee0b8, #fdd49f, #fdc68f, #fdb27b, #fc9662, #f67c52, #ef6447, #df432d, #ce2417); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
 .fp-legend .bar small { display: flex; justify-content: space-between; font: 400 0.76rem/1 var(--font-display); color: var(--ink-3); }
@@ -312,8 +314,13 @@ td.muted { color: var(--ink-3); }
 .cite { position: relative; }
 .cite pre { margin: 0; white-space: pre; }
 .copy { position: absolute; top: 12px; right: 12px; font: 600 0.78rem/1 var(--font-display); padding: 8px 12px; border-radius: 999px; border: 1px solid #2b3650; background: #111827; color: #eef2f8; cursor: pointer; }
-footer { padding-block: 34px 48px; color: var(--ink-3); font: 400 0.82rem/1.6 var(--font-display); }
-footer .wrap { display: grid; gap: 8px; }
+footer { padding-block: 34px 48px; color: var(--ink-3); font: 400 0.86rem/1.5 var(--font-display); }
+footer .wrap { display: grid; gap: 14px; }
+.foot-h { font: 600 0.86rem/1.3 var(--font-display); color: var(--ink-2); margin: 0; }
+.credits { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 18px; margin: 0; }
+.credits dt { color: var(--ink-2); }
+.credits dd { margin: 0; }
+@media (max-width: 560px) { .credits { grid-template-columns: minmax(0, 1fr); gap: 0; } .credits dd { margin-bottom: 6px; } }
 
 .tooltip { position: fixed; z-index: 30; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 10px 28px rgba(15,21,34,.18); padding: 8px 10px; font: 400 0.8rem/1.35 var(--font-display); max-width: 260px; }
 .tooltip .tv { font-weight: 700; font-size: 1rem; }
@@ -592,7 +599,7 @@ footer .wrap { display: grid; gap: 8px; }
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">Paper Sec. 4</span>
-        <h2>What breaks, and for whom</h2>
+        <h2>Main findings</h2>
         <p>Seven frozen foundation models and two supervised baselines on five datasets: Sentinel-2 classification (m-EuroSAT, m-BigEarthNet), crop-type and land-cover segmentation (m-SA-crop, m-Chesapeake), and burn-scar mapping (HLS Burn Scar). Every number is a drop relative to the same model's clean score, averaged over three seeds.</p>
       </div>
       <div class="tiles" id="tiles"></div>
@@ -612,13 +619,17 @@ footer .wrap { display: grid; gap: 8px; }
           <div class="pills" role="radiogroup" aria-label="Severity" id="fp-sev"></div>
         </div>
         <div class="fp-legend">
+          <div class="fp-row">
           <span class="bar"><i></i><small><span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span></small></span>
           <span>relative drop (%)</span>
           <span><span class="sw neg"></span>negative: slightly better than clean</span>
           <span><span class="sw na">×</span>not defined for this model or task</span>
           <span><span class="sw max"></span>largest drop in the column</span>
+          </div>
+          <div class="fp-row">
           <span><svg viewBox="-7 -7 14 14" aria-hidden="true"><g stroke="var(--frozen)" stroke-width="1.6" stroke-linecap="round"><path d="M0-6V6M-5.2-3 5.2 3M-5.2 3 5.2-3"/></g></svg>frozen encoder, clean-trained head</span>
           <span><svg viewBox="-7 -7 14 14" aria-hidden="true"><path fill="var(--scratch)" d="M.6-6.5C3.9-3.2 5.6-.6 5.2 2.4 4.8 5 2.6 6.6 0 6.6S-5 5-5.2 2.3C-5.4-.2-3.6-1.6-2.6-3.6c.3 1.6 1 2.6 2.1 2.9C.6-2.6 1.3-4.4.6-6.5Z"/></svg>supervised, trained from scratch</span>
+          </div>
         </div>
         <p class="scroll-hint">Scroll sideways to see all five datasets.</p>
         <div class="chart-scroll"><svg id="fp-svg" role="img" aria-label="Relative drop per model, dataset and defect family"></svg></div>
@@ -632,7 +643,7 @@ footer .wrap { display: grid; gap: 8px; }
       <div class="sec-head">
         <span class="eyebrow">Paper Sec. 4.5</span>
         <h2>Robustness rankings do not transfer</h2>
-        <p>Rank the foundation models by how much they lose to resolution loss (left) and to a calibration gain error (right), at the severe setting. The two orders are anti-correlated on four of five datasets. RAMEN, which conditions on resolution, loses least to blur on every dataset and most to gain on every satellite dataset; DINOv3 is the reverse. A benchmark built only from blur and noise would miss this.</p>
+        <p>Rank the foundation models by how much they lose to resolution loss (left) and to a calibration gain error (right), at the severe setting. On four of the five datasets the two orders are close to reversed. RAMEN, which conditions on resolution, loses the least to blur on every dataset and the most to gain error on every satellite dataset; the DINOv3 models are the reverse. Generic corruption benchmarks mostly test blur and noise, so ranked on blur alone RAMEN would be picked as the most robust model, although it is the one most hurt by a calibration error.</p>
       </div>
       <div class="figure">
         <div class="fig-controls">
@@ -686,7 +697,7 @@ footer .wrap { display: grid; gap: 8px; }
       <div class="sec-head">
         <span class="eyebrow">Paper Sec. 4.7</span>
         <h2>A smarter readout helps, but not with blur</h2>
-        <p>Retraining only the linear readout on degraded training views, with the encoder still frozen, removes most of the noise and harmonization loss on m-BigEarthNet. Resolution loss still costs about a fifth of the clean score: the detail is gone from the encoder's features. The readout saw the test defect types during training, so this is the best case for defects you can anticipate.</p>
+        <p>Retraining only the linear readout on degraded training views, with the encoder still frozen, removes most of the noise and harmonization loss on m-BigEarthNet. Resolution loss still costs about a fifth of the clean score, because the detail is gone from the encoder's features. This is a best case: the readout was trained on labeled images carrying the same defect types as the test images. A deployed model rarely has such labels or knows which defects to expect, so it would have to adjust from unlabeled images alone, and whether that can bring back detail lost to blur is an open question.</p>
       </div>
       <div class="figure">
         <div class="legend" id="rc-legend"></div>
@@ -752,7 +763,13 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
 
 <footer>
   <div class="wrap">
-    <span>Imagery: Copernicus Sentinel-2 data (m-EuroSAT, m-BigEarthNet, m-SA-crop) and USDA NAIP aerial imagery (m-Chesapeake) via GEO-Bench; HLS Burn Scars (NASA and IBM) via PANGAEA. Map links: OpenStreetMap.</span>
+    <p class="foot-h">Image credits</p>
+    <dl class="credits">
+      <dt>m-EuroSAT, m-BigEarthNet, m-SA-crop</dt><dd>Copernicus Sentinel-2 data, via GEO-Bench</dd>
+      <dt>m-Chesapeake</dt><dd>USDA NAIP aerial imagery, via GEO-Bench</dd>
+      <dt>HLS Burn Scar</dt><dd>HLS Burn Scars (NASA and IBM), via PANGAEA</dd>
+      <dt>Map links</dt><dd>OpenStreetMap</dd>
+    </dl>
     <span>© 2026 the authors · <a href="https://arxiv.org/abs/2609.23427" target="_blank" rel="noopener">arXiv:2609.23427</a></span>
   </div>
 </footer>
@@ -1162,19 +1179,31 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
   const median = (arr) => { const s = [...arr].sort((a, b) => a - b); const n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };
   const topC1 = allExcess("C1")[0];
   const p1Mit = DATA.mitigation.P1;
-  const TILES = [
-    [topC1.x.e.toFixed(0), "pp", `extra drop from one compound chain beyond its worst single defect (${LABEL[topC1.m]}, ${DSLABEL[topC1.ds]})`],
-    [(median(tauByDs) < 0 ? "−" : "") + Math.abs(median(tauByDs)).toFixed(2), "", "Kendall τ between model rankings under blur and under gain error, median over five datasets: the orders largely reverse"],
-    [p1Mit.aware.toFixed(0), "%", `severe-blur drop left after retraining the readout on degraded views (from ${p1Mit.original.toFixed(0)}%)`],
-    ["37", "", "test conditions per multispectral model: 4 primitives, 2 chains, 3 severities, both gain directions"],
+  const meanS3 = (fam) => {
+    const v = DATASETS.flatMap((ds) => MODELS.map((m) => famDrop(ds.key, m.key, fam, 3))).filter(Boolean).map((r) => r.v);
+    return v.reduce((a, b) => a + b, 0) / v.length;
+  };
+  const FINDINGS = [
+    ["Resolution loss hurts most",
+     `At the severe level, models lose ${meanS3("P1").toFixed(0)}% of their clean score to resolution loss on average, ${meanS3("P4").toFixed(0)}% to noise, and under ${Math.ceil(Math.max(meanS3("P2"), meanS3("P3")))}% to gain error or misregistration.`,
+     "#fingerprints", "See every model and dataset"],
+    ["No model is robust to every defect",
+     "Of the foundation models, RAMEN loses the least to resolution loss on every dataset and the most to gain error on every satellite dataset. The DINOv3 models show the opposite pattern.",
+     "#rankings", "Compare the two rankings"],
+    ["Defects add up",
+     `A gain error, blur and noise in the same image can cost ${topC1.x.e.toFixed(0)} percentage points more than the worst of the three alone (${LABEL[topC1.m]} on ${DSLABEL[topC1.ds]}).`,
+     "#chains", "See when defects compound"],
+    ["Retraining the readout does not undo blur",
+     `Training the readout on degraded images removes most noise and harmonization losses, but severe resolution loss still costs ${p1Mit.aware.toFixed(0)}% of the clean score on m-BigEarthNet, down from ${p1Mit.original.toFixed(0)}%, averaged over the foundation models.`,
+     "#recovery", "See what the readout recovers"],
   ];
   const tilesEl = $("tiles");
-  TILES.forEach(([v, unit, desc]) => {
+  FINDINGS.forEach(([title, text, href, more]) => {
     const t = document.createElement("div"); t.className = "tile";
-    const val = document.createElement("div"); val.className = "value"; val.textContent = v;
-    if (unit) { const u = document.createElement("small"); u.textContent = unit; val.appendChild(u); }
-    const p = document.createElement("p"); p.textContent = desc;
-    t.append(val, p);
+    const h = document.createElement("h3"); h.textContent = title;
+    const p = document.createElement("p"); p.textContent = text;
+    const a = document.createElement("a"); a.href = href; a.textContent = more;
+    t.append(h, p, a);
     tilesEl.appendChild(t);
   });
 
@@ -1291,7 +1320,7 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
       g.addEventListener("blur", hideTip);
     });
     const tau = kendall(items.map((r) => r.a.v), items.map((r) => r.b.v));
-    $("rk-readout").textContent = `Kendall τ between the two orders on ${DSLABEL[rkDs]}: ${tau < 0 ? "−" : ""}${Math.abs(tau).toFixed(2)} (1 = same order, −1 = reversed). Median over the five datasets: −${Math.abs(median(tauByDs)).toFixed(2)}.`;
+    $("rk-readout").textContent = `On ${DSLABEL[rkDs]}, the agreement between the two orders is Kendall τ = ${tau < 0 ? "−" : ""}${Math.abs(tau).toFixed(2)}, where 1 means the same order and −1 the exact reverse. The median over the five datasets is −${Math.abs(median(tauByDs)).toFixed(2)}.`;
     table($("rk-table"), ["Model", "P1 S3 drop (%)", "P1 rank", "P2 S3 drop (%)", "P2 rank"], items.map((r) => [r.m.label, fmt(r.a.v), String(ra.get(r.m.key) + 1), fmt(r.b.v), String(rb.get(r.m.key) + 1)]));
   }
   radios($("rk-ds"), "rkd", DATASETS.map((d) => ({ value: d.key, label: d.label })), rkDs, (v) => { rkDs = v; drawRanks(); });
@@ -1450,7 +1479,10 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
     ends.sort((a, b) => a.y - b.y);
     for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
     ends.forEach((e) => text(svg, W - R + 8, e.y + 4, e.n, "lbl", "start", { "font-size": "11.5" }));
-    table($("realism-table"), ["σ (px)", ...RL.map((r) => `${r[2]} median r`)], DATA.realism["m-eurosat"].map((p, i) => [String(p.sigma), ...RL.map(([k]) => DATA.realism[k][i].r.toFixed(4))]));
+    table($("realism-table"), ["σ (px)", ...RL.map((r) => r[2])], DATA.realism["m-eurosat"].map((p, i) => [String(p.sigma), ...RL.map(([k]) => DATA.realism[k][i].r.toFixed(4))]));
+    const rn = document.createElement("p"); rn.className = "note"; rn.style.marginTop = "8px";
+    rn.textContent = "Median correlation r over the test patches between B08, after the blur and ×2 area reduction, and the real B8A.";
+    $("realism-table").appendChild(rn);
   }
   const rlLeg = $("realism-legend");
   RL.forEach(([k, v, n]) => { const s = document.createElement("span"); const i = document.createElement("i"); i.style.background = `var(${v})`; s.append(i, document.createTextNode(n)); rlLeg.appendChild(s); });
