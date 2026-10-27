@@ -121,7 +121,9 @@ a.st:hover .node, a.st:focus-visible .node { border-color: var(--hero-accent); b
 .st-stage { font: 600 0.8rem/1.3 var(--font-display); color: var(--hero-ink-2); }
 .st-defect { font: 600 1rem/1.3 var(--font-display); color: var(--hero-ink); }
 .st-defect b { color: var(--hero-accent); margin-right: 5px; }
-.why-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.why-cta { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+/* section heads sit centered, like the paper title */
+.sec-head, .ex-head, .why-head { justify-items: center; text-align: center; }
 @media (max-width: 760px) {
   .line { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .line::before { top: 32px; bottom: 32px; left: 31px; right: auto; width: 2px; height: auto; }
