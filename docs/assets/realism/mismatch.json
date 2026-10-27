@@ -1,0 +1,23 @@
+{
+ "raw": {
+  "sigma": 0.0,
+  "r": 0.9926,
+  "mean_mismatch_pct": 12.34
+ },
+ "p1s2": {
+  "sigma": 1.0,
+  "r": 0.9995,
+  "mean_mismatch_pct": 3.16
+ },
+ "sample": "id_433688",
+ "scale_max_pct": 20.0,
+ "ramp": [
+  "#cde2fb",
+  "#9ec5f4",
+  "#6da7ec",
+  "#3987e5",
+  "#256abf",
+  "#184f95",
+  "#0d366b"
+ ]
+}
