@@ -173,11 +173,11 @@ def main() -> None:
 
 
 def make_cards(box: tuple[int, int, int] = CARD_BOX) -> None:
-    """Defect-card thumbnails: the same HLS crop under each family at S3."""
+    """Card thumbnails: the same HLS crop clean and under each family at S3."""
     left, top, size = box
     out = OUT / "cards"
     out.mkdir(exist_ok=True)
-    for fam, cond in [("p1", "p1_s3"), ("p2", "p2_gain_down_s3"), ("p3", "p3_s3"), ("p4", "p4_s3"),
+    for fam, cond in [("clean", "clean"), ("p1", "p1_s3"), ("p2", "p2_gain_down_s3"), ("p3", "p3_s3"), ("p4", "p4_s3"),
                       ("c1", "c1_gain_down_s3"), ("c2", "c2_gain_down_s3")]:
         im = Image.open(OUT / "hls-burn-scars" / f"{cond}.jpg").crop((left, top, left + size, top + size))
         im.resize((192, 192), Image.NEAREST).save(out / f"{fam}.jpg", quality=90, optimize=True)
