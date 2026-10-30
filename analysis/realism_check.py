@@ -6,7 +6,7 @@ the same spectral range. For each test patch we pass B08 through P1's blur and x
 reduction for a grid of PSF widths and correlate it with the real B8A on the 20 m grid,
 then estimate the residual B08-B8A displacement with sub-pixel cross-correlation.
 
-Needs GEO-Bench (pip install geo-benchmark; set GEO_BENCH_DIR) and scikit-image.
+Needs GEO-Bench (pip install geobench; set GEO_BENCH_DIR) and scikit-image.
 Usage: python analysis/realism_check.py --dataset m-bigearthnet --out realism_m-bigearthnet.csv
 """
 from __future__ import annotations

@@ -9,7 +9,7 @@
 Plug in a model by editing `Encoder` (bands it consumes, preprocessing, feature extraction).
 The default `--encoder random` is a smoke test that needs no weights.
 
-    pip install geo-benchmark scikit-learn
+    pip install geobench scikit-learn
     GEO_BENCH_DIR=/path/to/geobench python examples/evaluate_frozen_encoder.py --max-train 500 --max-test 300
 """
 from __future__ import annotations

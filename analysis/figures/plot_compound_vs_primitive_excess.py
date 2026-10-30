@@ -5,13 +5,15 @@ Two modes are supported:
 - s3: one severity (S3), matching the main fingerprint heatmap.
 - max: maximum excess across S1/S2/S3 and signed directions per cell.
 
-Excess is defined as full compound relative drop minus the relative drop of the
-worst primitive/component used by the aggregate table.
+Excess is the compound's relative drop minus the largest relative drop among its
+components, both as the mean of per-seed drops. The components are P1, P2 and P4 for
+C1, and the resolution-only and gain-only arms for C2.
 """
 from __future__ import annotations
 
 import argparse
 import csv
+import re
 import math
 from pathlib import Path
 from typing import Optional
@@ -96,46 +98,57 @@ def direction_tag(direction: str) -> str:
     return "·"
 
 
+def component_conditions(condition: str) -> list[str]:
+    fam, direction, sev = re.fullmatch(r"(c[12])_gain_(down|up)_(s\d)", condition).groups()
+    if fam == "c1":
+        return [f"p1_{sev}", f"p2_gain_{direction}_{sev}", f"p4_{sev}"]
+    return [f"c2_resolution_only_{sev}", f"c2_gain_only_{direction}_{sev}"]
+
+
 def read_candidates(path: Path, mode: str) -> list[dict]:
     rows = []
     with path.open(newline="") as f:
-        for r in csv.DictReader(f):
-            if r.get("complete_seed_coverage", "").lower() != "true":
-                continue
-            if r.get("is_clean", "").lower() == "true":
-                continue
-            fam = FAMILY_ALIASES.get(r.get("condition_family", ""))
-            if fam not in {"C1", "C2"}:
-                continue
-            excess = parse_float(r.get("compound_excess_relative_drop_pct", ""))
-            compound = parse_float(r.get("relative_drop_pct_mean", ""))
-            comp_abs = parse_float(r.get("component_max_absolute_drop_mean", ""))
-            clean = parse_float(r.get("clean_metric_mean", ""))
-            severity = parse_float(r.get("severity", ""))
-            if excess is None or compound is None or severity is None:
-                continue
-            if mode == "s3" and int(severity) != 3:
-                continue
-            component_rel = ""
-            if comp_abs is not None and clean not in (None, 0):
-                component_rel = comp_abs / abs(clean) * 100.0
-            rows.append({
-                "dataset": r.get("dataset", ""),
-                "task_type": r.get("task_type", ""),
-                "model": r.get("model", ""),
-                "variant": r.get("variant", ""),
-                "family": fam,
-                "condition": r.get("condition", ""),
-                "severity": int(severity),
-                "direction": r.get("direction", ""),
-                "compound_relative_drop_pct": compound,
-                "component_max_condition": r.get("component_max_condition", ""),
-                "component_max_relative_drop_pct": component_rel,
-                "excess_pp": excess,
-                "excess_ratio": parse_float(r.get("compound_excess_ratio_vs_component_max", "")),
-                "label": label_cell(r.get("dataset", ""), r.get("model", ""), r.get("variant", "")),
-                "mechanism": mechanism_for_model(r.get("model", "")),
-            })
+        table = list(csv.DictReader(f))
+    drops = {(r.get("dataset"), r.get("model"), r.get("variant"), r.get("condition")): parse_float(r.get("relative_drop_pct_mean", ""))
+             for r in table}
+    for r in table:
+        if r.get("complete_seed_coverage", "").lower() != "true":
+            continue
+        if r.get("is_clean", "").lower() == "true":
+            continue
+        fam = FAMILY_ALIASES.get(r.get("condition_family", ""))
+        if fam not in {"C1", "C2"}:
+            continue
+        compound = parse_float(r.get("relative_drop_pct_mean", ""))
+        severity = parse_float(r.get("severity", ""))
+        if compound is None or severity is None or not re.fullmatch(r"c[12]_gain_(down|up)_s\d", r.get("condition", "")):
+            continue
+        if mode == "s3" and int(severity) != 3:
+            continue
+        key = (r.get("dataset"), r.get("model"), r.get("variant"))
+        components = {c: drops.get((*key, c)) for c in component_conditions(r["condition"])}
+        if any(v is None for v in components.values()):
+            continue
+        worst = max(components, key=components.get)
+        component_rel = components[worst]
+        excess = compound - component_rel
+        rows.append({
+            "dataset": r.get("dataset", ""),
+            "task_type": r.get("task_type", ""),
+            "model": r.get("model", ""),
+            "variant": r.get("variant", ""),
+            "family": fam,
+            "condition": r.get("condition", ""),
+            "severity": int(severity),
+            "direction": r.get("direction", ""),
+            "compound_relative_drop_pct": compound,
+            "component_max_condition": worst,
+            "component_max_relative_drop_pct": component_rel,
+            "excess_pp": excess,
+            "excess_ratio": compound / component_rel if component_rel else "",
+            "label": label_cell(r.get("dataset", ""), r.get("model", ""), r.get("variant", "")),
+            "mechanism": mechanism_for_model(r.get("model", "")),
+        })
     return rows
 
 

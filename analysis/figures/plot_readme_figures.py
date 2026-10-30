@@ -30,9 +30,9 @@ import rspdbench as rb  # noqa: E402
 OUT = ROOT / "assets" / "readme"
 DPI = 200
 
-# Clean training-set mean per band (reflectance), PANGAEA HLS Burn Scars training split,
-# the same values the project page uses for P4 and C1.
-HLS_MEAN = [0.05189, 0.07617, 0.09353, 0.20407, 0.23159, 0.17121]
+# Clean mean per band (reflectance) over the 540 PANGAEA HLS Burn Scars training tiles,
+# the noise scale behind the results and the project page.
+HLS_MEAN = [0.05350, 0.07883, 0.09626, 0.21194, 0.23598, 0.17314]
 COMPOSITE = ["SWIR_2", "NIR_NARROW", "RED"]
 CROP = (288, 336, 64)  # left, top, size in pixels: a reservoir arm inside the burn scar
 CHANGE_MAX = 30.0      # change-map color scale, % of band mean

@@ -57,8 +57,8 @@ SCENES = [
 HLS = {"key": "hls-burn-scars", "label": "HLS Burn Scar", "place": "San Diego County, California, USA",
        "source": "Harmonized Landsat Sentinel-2 (HLS S30), 6 bands", "task": "burn-scar segmentation",
        "composite": (["SWIR_2", "NIR_NARROW", "RED"], "SWIR 2, NIR and red as R, G, B"),
-       # clean training-set mean per band (reflectance), PANGAEA HLS Burn Scars training split
-       "band_mean": [0.05189, 0.07617, 0.09353, 0.20407, 0.23159, 0.17121]}
+       # clean mean per band (reflectance) over the 540 PANGAEA training tiles, as used for the results
+       "band_mean": [0.05350, 0.07883, 0.09626, 0.21194, 0.23598, 0.17314]}
 
 CHESAPEAKE_IDS = {"RED": "RED", "GREEN": "GREEN", "BLUE": "BLUE", "NEARINFRARED": "NIR"}
 CARD_BOX = (272, 320, 96)  # left, top, size of the HLS crop shown on the defect cards
@@ -173,11 +173,11 @@ def main() -> None:
 
 
 def make_cards(box: tuple[int, int, int] = CARD_BOX) -> None:
-    """Card thumbnails: the same HLS crop clean and under each family at S3."""
+    """Defect-card thumbnails: the same HLS crop under each family at S3."""
     left, top, size = box
     out = OUT / "cards"
     out.mkdir(exist_ok=True)
-    for fam, cond in [("clean", "clean"), ("p1", "p1_s3"), ("p2", "p2_gain_down_s3"), ("p3", "p3_s3"), ("p4", "p4_s3"),
+    for fam, cond in [("p1", "p1_s3"), ("p2", "p2_gain_down_s3"), ("p3", "p3_s3"), ("p4", "p4_s3"),
                       ("c1", "c1_gain_down_s3"), ("c2", "c2_gain_down_s3")]:
         im = Image.open(OUT / "hls-burn-scars" / f"{cond}.jpg").crop((left, top, left + size, top + size))
         im.resize((192, 192), Image.NEAREST).save(out / f"{fam}.jpg", quality=90, optimize=True)

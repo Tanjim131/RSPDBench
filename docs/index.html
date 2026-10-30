@@ -547,7 +547,7 @@ footer .wrap { display: grid; gap: 14px; }
             <p>Optical blur and a coarser detector: a Gaussian blur, averaging over \(N \times N\) pixels, then resizing back to the original grid.</p>
             <dl>
               <dt>Levels</dt><dd>\(N \in \{1, 2, 4\}\), \(\sigma = N/2\)</dd>
-              <dt>Anchor</dt><dd>keeps \(19\text{–}29\%\) of the contrast at the coarse Nyquist frequency; Sentinel-2 specifies \(15\text{–}30\%\)</dd>
+              <dt>Anchor</dt><dd>keeps about \(20\%\) of the contrast at the coarse Nyquist frequency at S2 and S3 (\(57\%\) at S1); Sentinel-2 specifies \(15\text{–}30\%\)</dd>
             </dl>
           </div>
         </a>
@@ -630,7 +630,7 @@ footer .wrap { display: grid; gap: 14px; }
       <div class="sec-head" style="margin-top:44px">
         <span class="eyebrow">Paper Sec. 3.4</span>
         <h3 style="font-size:1.35rem">Checked against the sensor itself</h3>
-        <p>Sentinel-2 measures near-infrared twice: band B08 at 10 m and band B8A at 20 m, over almost the same wavelengths. Passing the real 10 m band through P1's moderate setting reproduces the real 20 m band of the same scene. Across 3,000 test patches, the best-fitting blur width is \(\sigma = 0.75\text{–}1.5\) pixels, bracketing the benchmark's \(\sigma = 1\). The real misregistration between the two bands is only \(0.02\text{–}0.05\) px, so P3's \(1\) and \(2\) px levels are deliberate stress tests.</p>
+        <p>Sentinel-2 measures near-infrared twice: band B08 at 10 m and band B8A at 20 m, over almost the same wavelengths. Passing the real 10 m band through P1's moderate setting closely matches the real 20 m band of the same scene. Across 3,000 test patches, the best-fitting blur width is \(\sigma = 0.75\text{–}1.5\) pixels, bracketing the benchmark's \(\sigma = 1\). The real misregistration between the two bands is only \(0.02\text{–}0.05\) px, so P3's \(1\) and \(2\) px levels are deliberate stress tests.</p>
       </div>
       <div class="two">
         <div class="figure">
@@ -702,7 +702,7 @@ footer .wrap { display: grid; gap: 14px; }
       <div class="sec-head">
         <span class="eyebrow">Paper Sec. 4.5</span>
         <h2>Robustness rankings do not transfer</h2>
-        <p>Rank the foundation models by how much they lose to resolution loss (left) and to a calibration gain error (right), at the severe setting. On four of the five datasets the two orders are close to reversed. RAMEN, which conditions on resolution, loses the least to blur on every dataset and the most to gain error on every satellite dataset; the DINOv3 models are the reverse. Generic corruption benchmarks mostly test blur and noise, so ranked on blur alone RAMEN would be picked as the most robust model, although it is the one most hurt by a calibration error.</p>
+        <p>Rank the foundation models by how much they lose to resolution loss (left) and to a calibration gain error (right), at the severe setting. On four of the five datasets the two orders are close to reversed. RAMEN, which conditions on resolution, loses the least to blur on every dataset and the most to gain error on every satellite dataset; the DINOv3 models are the reverse. Ranked on blur alone, RAMEN would be picked as the most robust model, although it is the one most hurt by a calibration error.</p>
       </div>
       <div class="figure">
         <div class="fig-controls">
@@ -756,7 +756,7 @@ footer .wrap { display: grid; gap: 14px; }
       <div class="sec-head">
         <span class="eyebrow">Paper Sec. 4.7</span>
         <h2>A smarter readout helps, but not with blur</h2>
-        <p>Retraining only the linear readout on degraded training views, with the encoder still frozen, removes most of the noise and harmonization loss on m-BigEarthNet. Resolution loss still costs about a fifth of the clean score, because the detail is gone from the encoder's features. This is a best case: the readout was trained on labeled images carrying the same defect types as the test images. A deployed model rarely has such labels or knows which defects to expect, so it would have to adjust from unlabeled images alone, and whether that can bring back detail lost to blur is an open question.</p>
+        <p>Retraining only the linear readout on degraded training views, with the encoder still frozen, removes most of the noise and harmonization loss on m-BigEarthNet. Resolution loss still costs about a fifth of the clean score, which suggests that much of the detail is out of this readout's reach. This readout had an advantage: it was trained on labeled images carrying the same defect types as the test images. A deployed model rarely has such labels or knows which defects to expect, so it would have to adjust from unlabeled images alone, and whether that can bring back detail lost to blur is an open question.</p>
       </div>
       <div class="figure">
         <div class="legend" id="rc-legend"></div>
@@ -1001,7 +1001,7 @@ bands = [<span class="s">"BLUE"</span>, <span class="s">"GREEN"</span>, <span cl
   };
   function refHTML(f, s) {
     switch (f) {
-      case "P1": return `${tex("\\sigma = N/2")} keeps ${tex("19\\text{–}29\\%")} of the contrast at the finest detail the coarse grid can hold; Sentinel-2 specifies ${tex("15\\text{–}30\\%")} for its 10 m bands.`;
+      case "P1": return `With ${tex("\\sigma = N/2")}, this level keeps ${tex(["57\\%", "21\\%", "19\\%"][s - 1])} of the contrast at the finest detail ${s === 1 ? "the native" : "the coarse"} grid can hold; Sentinel-2 specifies ${tex("15\\text{–}30\\%")} for its 10 m bands.`;
       case "P2": return `Sentinel-2 requires calibration within ${tex("5\\%")} (goal ${tex("3\\%")}); Landsat 8 OLI within ${tex("\\pm 3\\%")}. ` + ["S1 is calibration-grade.", "S2 exceeds the Sentinel-2 requirement, as a cross-sensor residual would.", "S3 is a stress level."][s - 1];
       case "P3": return `Sentinel-2 requires band-to-band registration within ${tex("0.3")} of the coarser pixel at ${tex("3\\sigma")}, i.e. ${tex("0.6")} px at 10 m. ` + ["S1 is inside this bound.", "S2 is outside it.", "S3 is outside it."][s - 1];
       case "P4": return `Sentinel-2 requires ${tex("\\mathrm{SNR} = 72\\text{–}174")} at reference radiance. ` + ["S1 adds noise at the instrument level.", "S2 mimics dark targets or a lower-grade sensor.", "S3 mimics dark targets or a lower-grade sensor."][s - 1];
