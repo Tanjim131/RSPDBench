@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rspdbench"
-version = "1.0.0"
+version = "1.0.1"
 description = "Physically grounded remote-sensing product degradations for benchmarking Earth-observation models"
-readme = "README.md"
+readme = "PYPI.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.9"

@@ -27,7 +27,7 @@ _S2_NIR_SWIR = ("B08", "B8A", "B11", "B12")
 class BandContract:
     """Band groups of one dataset.
 
-    reference: bands that no operator moves or rescales.
+    reference: bands that P3 and C2 leave unchanged.
     p3_shifted: bands translated by P3.
     c2_geometric: bands resampled and translated by the C2 chain.
     c2_radiometric: bands rescaled by the C2 chain.

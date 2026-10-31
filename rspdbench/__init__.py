@@ -4,7 +4,7 @@ from .contracts import CONTRACTS, MEUROSAT_STORAGE_ORDER, BandContract, canonica
 from .metrics import compound_excess, relative_drop
 from .operators import degrade
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __all__ = [
     "Condition", "all_conditions", "conditions_for", "get_condition",
     "CONTRACTS", "MEUROSAT_STORAGE_ORDER", "BandContract", "canonical_band_id", "get_contract",

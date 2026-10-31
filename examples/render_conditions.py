@@ -3,7 +3,11 @@
 
 Example (HLS Burn Scars tile from PANGAEA, bands Blue, Green, Red, NIR, SWIR1, SWIR2):
     python examples/render_conditions.py --tif subsetted_512x512_HLS.S30.T11SNS.2020276.v1.4_merged.tif \
-        --dataset hls-burn-scars --composite SWIR_2 NIR_NARROW RED --out renders/
+        --dataset hls-burn-scars --composite SWIR_2 NIR_NARROW RED --directions down up \
+        --band-mean 0.05350 0.07883 0.09626 0.21194 0.23598 0.17314 --out renders/
+
+Without --directions down up, only the gain-down conditions are rendered. Without --band-mean,
+P4 and C1 scale their noise by this scene's means, not the clean training means the benchmark uses.
 
 The display stretch is fixed from the clean image, so gain shifts stay visible as
 brightness changes and misregistration as colored edges.

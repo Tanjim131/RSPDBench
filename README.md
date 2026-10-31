@@ -10,7 +10,7 @@ Tanjim Bin Faruk, Khondaker Masfiq Reza, Shrideep Pallickara, Sangmi Lee Pallick
 
 **WACV 2027**
 
-[Paper](https://arxiv.org/abs/2609.23427) · [Project page](https://tanjim131.github.io/RSPDBench/) · [PyPI](https://pypi.org/project/rspdbench/)
+[Paper](https://arxiv.org/abs/2609.23427) · [Supplement](docs/assets/RSPDBench_supplement.pdf) · [Project page](https://tanjim131.github.io/RSPDBench/) · [PyPI](https://pypi.org/project/rspdbench/)
 
 </div>
 
@@ -68,7 +68,7 @@ for cond in rb.conditions_for(contract, bands):                      # 37 condit
     # -> your model's own band selection, normalization and resizing -> frozen encoder -> clean-trained head
 ```
 
-Random parts (noise fields, shift directions) are deterministic functions of `(seed, sample_id, band)` and stay fixed across severities, so a higher severity strengthens the same defect.
+Random parts are deterministic functions of the seed, the sample and, for noise, the band. The P4 noise field and the P3 and C2 shift direction stay fixed across severities, so a higher severity strengthens the same defect. C1 draws its noise on the reduced grid, so its noise field differs between severities.
 
 ## The defects
 

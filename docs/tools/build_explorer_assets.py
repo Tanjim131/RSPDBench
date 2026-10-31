@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the project-page explorer: one test scene per dataset under every condition.
+"""Render the project-page explorer: one example scene per dataset under every condition.
 
 Each scene is degraded with the released rspdbench operators in native product units,
 using the clean training-set mean of each band for P4/C1, then shown as a fixed
@@ -36,7 +36,8 @@ WAVELENGTH_NM = {
 }
 S2_COMPOSITE = (["B12", "B8A", "B04"], "SWIR 2 (B12), narrow NIR (B8A) and red (B04) as R, G, B")
 
-# One test scene per dataset. Place names are read off the scene-center coordinates.
+# One example scene per dataset: test scenes, except the HLS tile, which comes from the
+# training folder. Place names are read off the scene-center coordinates.
 SCENES = [
     {"key": "m-eurosat", "bench": "classification_v1.0", "index": 781, "label": "m-EuroSAT",
      "place": "Flevoland, Netherlands", "source": "Sentinel-2, 13 bands resampled to 10 m",

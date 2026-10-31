@@ -418,6 +418,8 @@ footer .wrap { display: grid; gap: 14px; }
       <div class="buttons">
         <a class="btn primary" href="https://arxiv.org/abs/2609.23427" target="_blank" rel="noopener">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></svg>Paper (arXiv)</a>
+        <a class="btn" href="assets/RSPDBench_supplement.pdf" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h5M6 11h5"/></svg>Supplement</a>
         <a class="btn" href="https://github.com/Tanjim131/RSPDBench" target="_blank" rel="noopener">
           <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
         <a class="btn" href="#citation">BibTeX</a>
@@ -427,7 +429,7 @@ footer .wrap { display: grid; gap: 14px; }
     <div class="why" id="why">
       <div class="why-head">
         <h2>What goes wrong before a model sees the image</h2>
-        <p class="why-lede">Each step from the ground to the model works within a tolerance and can leave a defect that clean benchmarks do not include. RSPDBench adds these defects to real products one at a time, at three strengths taken from Sentinel-2 and Landsat 8 specifications, and measures how much each model loses.</p>
+        <p class="why-lede">Each step from the ground to the model works within a tolerance and can leave a defect that clean benchmarks do not include. RSPDBench adds these defects to real products one at a time, at three strengths anchored to Sentinel-2 and Landsat 8 specifications, and measures how much each model loses.</p>
       </div>
       <ol class="line" id="line">
         <li class="end"><div class="st"><span class="node"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 25l8-10 6 6 4-4 8 8z"/><circle cx="22" cy="9" r="3"/></svg></span><span class="st-stage">Start</span><span class="st-defect">The ground</span></div></li>
@@ -535,8 +537,8 @@ footer .wrap { display: grid; gap: 14px; }
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">Paper Sec. 3 · Tab. 1</span>
-        <h2>Six defects, each set by a published sensor specification</h2>
-        <p>Four primitives isolate one failure each; two chains combine them the way real acquisitions and harmonized products do. Severities S1 to S3 follow the Sentinel-2 and Landsat 8 specifications. Select a card to see that defect in the explorer.</p>
+        <h2>Six defects, anchored to published sensor specifications</h2>
+        <p>Four primitives isolate one failure each; two chains combine them the way real acquisitions and harmonized products do. Severities S1 to S3 are anchored to the Sentinel-2 and Landsat 8 specifications, and the stronger levels go past them on purpose. Select a card to see that defect in the explorer.</p>
       </div>
       <div class="defects" id="defect-cards">
         <a class="defect" href="#explorer" data-fam="P1">
@@ -722,7 +724,7 @@ footer .wrap { display: grid; gap: 14px; }
       <div class="sec-head">
         <span class="eyebrow">Paper Figs. 4 and 5</span>
         <h2>When defects compound</h2>
-        <p>The acquisition chain C1 applies a gain error, blur and coarse-grid noise together. Its excess is the drop beyond its worst single component. It peaks when blur has weakened a model without saturating it; at the most severe setting there is little left to lose.</p>
+        <p>The acquisition chain C1 applies a gain error, blur and coarse-grid noise together. Its excess is the drop beyond its worst single component. In most model and dataset pairs it is largest at S3. In others, such as DINOv3-Sat on m-SA-crop, it peaks at S2, because by S3 blur alone has taken most of the score.</p>
       </div>
       <div class="two">
         <div class="figure">
@@ -755,8 +757,8 @@ footer .wrap { display: grid; gap: 14px; }
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">Paper Sec. 4.7</span>
-        <h2>A smarter readout helps, but not with blur</h2>
-        <p>Retraining only the linear readout on degraded training views, with the encoder still frozen, removes most of the noise and harmonization loss on m-BigEarthNet. Resolution loss still costs about a fifth of the clean score, which suggests that much of the detail is out of this readout's reach. This readout had an advantage: it was trained on labeled images carrying the same defect types as the test images. A deployed model rarely has such labels or knows which defects to expect, so it would have to adjust from unlabeled images alone, and whether that can bring back detail lost to blur is an open question.</p>
+        <h2>A smarter readout helps, but blur stays costly</h2>
+        <p>Retraining only the linear readout on degraded training views, with the encoder still frozen, removes most of the noise and harmonization loss on m-BigEarthNet. It also cuts the resolution loss from about half of the clean score to about a fifth, but that is still more than any other single defect leaves, which suggests that some of the detail is out of this readout's reach. This readout had an advantage: it was trained on labeled images carrying the same defect types as the test images. A deployed model rarely has such labels or knows which defects to expect, so it would have to adjust from unlabeled images alone, and whether that can bring back detail lost to blur is an open question.</p>
       </div>
       <div class="figure">
         <div class="legend" id="rc-legend"></div>
